@@ -155,11 +155,11 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [x] CoR in an L-shaped room / with a doorway open to a corridor: planes at the combined bounding box center.
 - [x] Corridor → CoR in a long corridor: only the two cross axes change.
 - [x] CoR with a hole to space, or standing outside: refuses, nothing changes.
-- [ ] Tape: A/B outlines, line and label appear; distances match counted blocks (0.5 m and 2.5 m blocks).
-- [ ] Midpoint → symmetry: plane lands halfway; mirrored placement from A lands on B.
-- [ ] Clear width: lines and labels in a corridor match its width/height; "open" when facing space.
-- [ ] Centerline readout: offsets read 0.00 on the plane and ± either side.
-- [ ] `;` `'` `/` with Ctrl+Alt do not trigger anything vanilla.
+- [x] Tape: A/B outlines, line and label appear; distances match counted blocks (0.5 m and 2.5 m blocks).
+- [x] Midpoint → symmetry: plane lands halfway; mirrored placement from A lands on B.
+- [x] Clear width: lines and labels in a corridor match its width/height; "open" when facing space.
+- [x] Centerline readout: offsets read 0.00 on the plane and ± either side.
+- [x] `;` `'` `/` with Ctrl+Alt do not trigger anything vanilla.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development
