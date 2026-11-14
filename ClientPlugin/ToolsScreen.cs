@@ -48,7 +48,7 @@ internal sealed class ToolsScreen : ScreenView
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.2.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG • Home Grid", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.2.1 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG • Home Grid", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",

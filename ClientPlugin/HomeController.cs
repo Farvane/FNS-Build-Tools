@@ -80,10 +80,18 @@ internal sealed class HomeController
         {
             var old = EntityTransformFunctions.GetWorldTransform(entity.Data);
             var relative = WorldTransform.GetRelativeTransform(old, mainOld);
-            // Same composition vanilla fast travel uses: relative-to-anchor * new anchor transform.
-            if (Distance(relative * mainOld, old) > ConventionTolerance)
+            // WorldTransform * WorldTransform is parent * child (IL: Ori = a.Ori·b.Ori,
+            // Pos = a.Pos + rotate(b.Pos, a.Ori)). GetRelativeTransform returns a WorldTransform,
+            // so recompose as anchor * relative. (RelativeTransform * WorldTransform, which fast
+            // travel uses, takes the parent on the right; that overload does not apply here.)
+            var rebuilt = mainOld * relative;
+            if (Distance(rebuilt, old) > ConventionTolerance || !SameOrientation(rebuilt.Orientation, old.Orientation))
+            {
+                Log.Default.WriteLine("[FNS Build Tools] Transform check failed for " + entity.DebugName +
+                    ": old=" + old + " rebuilt=" + rebuilt + " anchor=" + mainOld);
                 throw new InvalidOperationException("Transform check failed; nothing was moved. Please report this with the SE2 log");
-            var moved = relative * mainNew;
+            }
+            var moved = mainNew * relative;
             moves.Add((entity, old, new WorldTransform(moved.Position, Quaternion.Normalize(moved.Orientation))));
         }
 
@@ -160,6 +168,10 @@ internal sealed class HomeController
     }
 
     private static double Distance(WorldTransform a, WorldTransform b) => Length(a.Position - b.Position);
+
+    // q and −q are the same rotation, so compare |q1·q2| against 1.
+    private static bool SameOrientation(Quaternion a, Quaternion b) =>
+        Math.Abs((double)a.X * b.X + (double)a.Y * b.Y + (double)a.Z * b.Z + (double)a.W * b.W) > 0.9999;
 
     private static double Length(Vector3D v) => Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
 

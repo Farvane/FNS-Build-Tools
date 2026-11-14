@@ -74,9 +74,14 @@ space.
   `Position + rotate(local, Orientation)`, and
   `GetRelativeTransform(child, parent)` gives
   `(TransformInv(child.Pos, parent), conj(parent.Ori)·child.Ori)`. Vanilla fast
-  travel moves each entity to `relativeToAnchor * targetAnchor`, and Home Grid
-  uses the same composition with `target = (−pivot_local, identity)`. Before
-  sending, a self-check confirms `rel * old_main ≈ old`, and aborts if not.
+  travel uses `RelativeTransform * WorldTransform`, which takes the parent on the
+  **right**. `WorldTransform * WorldTransform` takes the parent on the **left**
+  (`Ori = a·b`, `Pos = a.Pos + rotate(b.Pos, a.Ori)`). `GetRelativeTransform`
+  returns a `WorldTransform`, so Home Grid composes `anchor * relative`, with
+  `new_anchor = (−pivot_local, identity)`. Before sending, a self-check
+  confirms `old_main * rel ≈ old` (position and orientation), and aborts if not.
+  v0.2.0 had the operands swapped. The self-check caught it in-game and
+  nothing moved.
 - Vanilla fast travel teleports the whole group inside one `Scene.MoveToDCS`
   phase. Home Grid instead sends one request per entity in the same frame, in
   order: main grid, then the other grids, then the character. Whether the
