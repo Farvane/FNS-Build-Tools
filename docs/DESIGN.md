@@ -171,12 +171,12 @@ planes. Investigate reusing it.
 
 | Version | Scope |
 | --- | --- |
-| v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Built; in-game test pending.** |
-| v0.1.1 | Hotkeys with a click-through confirmation message; configurable in `settings.json`. **Built; in-game test pending.** |
+| v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Verified in-game (single-player).** |
+| v0.1.1 | Hotkeys with a click-through confirmation message; configurable in `settings.json`. **Verified in-game (single-player).** |
 | v0.2.1 | Home Grid (CoG/CoM) + Return, moving the Terminal group and the player. **Verified in-game (single-player):** CoG, CoM, rotor/piston/hinge subgrids, connector-docked ship, Return. |
-| v0.2.2 | Stop-then-home for moving grids/player (`IGameServer.StopEntityMovement`, in-process server only) and an origin clearance check (`GridIdSessionComponent` registry, world AABB overlap + 0.5 m). **Built; in-game test pending.** |
+| v0.2.2 | Stop-then-home for moving grids/player (`IGameServer.StopEntityMovement`, in-process server only) and an origin clearance check (`GridIdSessionComponent` registry, world AABB overlap + 0.5 m). **Verified in-game (single-player).** |
 | v0.3 | Tape, Midpoint, Clear width |
-| v0.4.0 | Symmetry to CoR with Corridor mode: `RoomFill` (6-connected BFS over `ICubeBlockStorage.IsPositionEmpty`, bitset over the grid AABB grown by one, the shell means open, 4M-cell budget), start at the character's torso cell. **Built; in-game test pending.** |
+| v0.4.0 | Symmetry to CoR with Corridor mode: `RoomFill` (6-connected BFS over `ICubeBlockStorage.IsPositionEmpty`, bitset over the grid AABB grown by one, the shell means open, 4M-cell budget), start at the character's torso cell. **Verified in-game (single-player).** |
 | later | Subgrids for Home, asymmetry finder, camera views, MP/admin validation |
 
 v0.1 comes first because it is the lowest-risk proof that the grid symmetry

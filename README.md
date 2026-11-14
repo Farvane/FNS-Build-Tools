@@ -120,13 +120,13 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [x] Home with a rotor/piston/hinge subgrid: the subgrid moves too and stays attached (no snapping or explosion).
 - [x] Home with a ship docked by connector: both move together.
 - [x] Home (CoM): the pivot is the center of mass. Compare with the game's CoM indicator if one is visible.
-- [ ] Moving grid (and moving player): Home stops everything, then homes; group arrives at rest.
-- [ ] Clearance: with another grid at the origin, Home refuses and names it; nothing moves.
+- [x] Moving grid (and moving player): Home stops everything, then homes; group arrives at rest.
+- [x] Clearance: with another grid at the origin, Home refuses and names it; nothing moves.
 - [x] Return restores the grid and you.
-- [ ] CoR in a closed room: planes centered on the room, not the ship.
-- [ ] CoR in an L-shaped room / with a doorway open to a corridor: planes at the combined bounding box center.
-- [ ] Corridor → CoR in a long corridor: only the two cross axes change.
-- [ ] CoR with a hole to space, or standing outside: refuses, nothing changes.
+- [x] CoR in a closed room: planes centered on the room, not the ship.
+- [x] CoR in an L-shaped room / with a doorway open to a corridor: planes at the combined bounding box center.
+- [x] Corridor → CoR in a long corridor: only the two cross axes change.
+- [x] CoR with a hole to space, or standing outside: refuses, nothing changes.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development
