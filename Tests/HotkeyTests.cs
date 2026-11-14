@@ -56,7 +56,7 @@ public class HotkeyTests
             var settings = Settings.Load(file);
             Assert.Equal("Ctrl+Alt+F6", settings.HotkeyFor(HotkeyActions.SymmetryToCoG));
             Assert.Equal("", settings.HotkeyFor(HotkeyActions.OpenBuildTools));
-            Assert.Equal("Ctrl+Alt+Shift+G", settings.HotkeyFor(HotkeyActions.ClearSymmetry));
+            Assert.Equal("Ctrl+Alt+Shift+N", settings.HotkeyFor(HotkeyActions.ClearSymmetry));
             Assert.True(settings.HotkeysEnabled);
         }
         finally
@@ -67,5 +67,26 @@ public class HotkeyTests
 
     [Fact]
     public void Missing_settings_use_defaults() =>
-        Assert.Equal("Ctrl+Alt+G", Settings.Load(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json")).HotkeyFor(HotkeyActions.SymmetryToCoG));
+        Assert.Equal("Ctrl+Alt+N", Settings.Load(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json")).HotkeyFor(HotkeyActions.SymmetryToCoG));
+
+    // Snapshot of keys bound by vanilla gameplay inputs (Keyboard::<Key> in SE2 4.0.0.3169
+    // GameData .def files, excluding debug/editor/gizmo inputs). Vanilla fires these even
+    // with Ctrl+Alt held, so plugin defaults must avoid them.
+    private static readonly HashSet<string> VanillaBound = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "A","B","C","D","E","F","G","H","J","K","L","M","P","Q","R","S","T","U","V","W","X","Y","Z",
+        "D0","D1","D2","D3","D4","D5","D6","D7","D8","D9","F1","F2","F4","F5","F6","F7","F8","F9","F11","F12",
+        "Back","Capital","Delete","Down","End","Enter","Escape","Home","Left","Right","Up","PageDown","PageUp",
+        "Pause","Space","Tab","OemBacktick","OemCloseBrackets","OemComma","OemOpenBrackets","OemPeriod",
+    };
+
+    [Fact]
+    public void Defaults_avoid_vanilla_bound_keys()
+    {
+        foreach (var chord in HotkeyActions.Defaults.Values)
+        {
+            Assert.True(Hotkey.TryParse(chord, out var hotkey, out _));
+            Assert.DoesNotContain(hotkey.Key, VanillaBound);
+        }
+    }
 }

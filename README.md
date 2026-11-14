@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.1.2 preview, not yet tested in-game.** An optional Pulsar Modern client
+**v0.1.3 preview.** Symmetry to CoG verified in-game (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
 v0.1 sets a grid's X, Y and Z symmetry planes to its **CoG (Center of
@@ -37,11 +37,11 @@ the screen confirms each action.
 
 | Default | Action |
 | --- | --- |
-| `Ctrl+Alt+G` | Set all symmetry planes to CoG |
-| `Ctrl+Alt+Shift+G` | Clear all symmetry planes |
-| `Ctrl+Alt+B` | Open the Build Tools screen |
+| `Ctrl+Alt+N` | Set all symmetry planes to CoG (ceNter) |
+| `Ctrl+Alt+Shift+N` | Clear all symmetry planes |
+| `Ctrl+Alt+I` | Open the Build Tools screen |
 
-Modifiers must match exactly. To change a hotkey, close SE2 and edit
+Vanilla reacts to its own keys even while Ctrl+Alt is held. For example, `G` opens the block picker. The defaults therefore use keys that vanilla gameplay leaves unbound (`I`, `N`, and `O`, which is reserved for Home Grid). Pick unbound keys when customizing. Modifiers must match exactly. To change a hotkey, close SE2 and edit
 `settings.json` in the plugin's Pulsar configuration folder (the screen shows
 the path). Set an action to `""` to disable it:
 
@@ -61,14 +61,14 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 
 ## In-game test checklist (v0.1)
 
-- [ ] Status shows the looked-at grid; sizes match the grid (count blocks).
-- [ ] All axes → CoG: planes appear centered; mirrored placement lands symmetric.
+- [x] Status shows the looked-at grid; sizes match the grid (count blocks).
+- [x] All axes → CoG: planes appear centered; mirrored placement lands symmetric.
 - [ ] Even- and odd-width test grids both center exactly.
 - [ ] Single-axis buttons change only that axis; Clear removes all planes.
 - [ ] Planes persist after save/reload.
-- [ ] `Ctrl+Alt+G` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input.
+- [ ] `Ctrl+Alt+N` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input. (v0.1.2 with `G` set the planes but also opened the block picker.)
 - [ ] Hotkeys do nothing without a block equipped, in chat, or in menus.
-- [ ] Check whether vanilla also reacts to `G` or `B` while Ctrl+Alt is held.
+- [ ] Vanilla does not react to `N` or `I` while Ctrl+Alt is held.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

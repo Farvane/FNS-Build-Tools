@@ -75,8 +75,11 @@ public static class HotkeyActions
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
-        [SymmetryToCoG] = "Ctrl+Alt+G",
-        [ClearSymmetry] = "Ctrl+Alt+Shift+G",
-        [OpenBuildTools] = "Ctrl+Alt+B",
+        // Vanilla matches its key binds regardless of modifiers, so defaults use keys
+        // no vanilla gameplay input binds (SE2 4.0.0.3169: I, N, O are free; G opens
+        // the block picker). O is reserved for Home Grid ("Origin").
+        [SymmetryToCoG] = "Ctrl+Alt+N",
+        [ClearSymmetry] = "Ctrl+Alt+Shift+N",
+        [OpenBuildTools] = "Ctrl+Alt+I",
     };
 }
