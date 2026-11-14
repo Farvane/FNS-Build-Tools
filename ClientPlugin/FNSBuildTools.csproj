@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>FNSBuildTools</AssemblyName>
     <RootNamespace>Farvane.BuildTools</RootNamespace>
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
     <Authors>Farvane Naval Systems</Authors>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -12,7 +12,7 @@
     <PackageReference Include="Lib.Harmony" Version="2.4.2" />
   </ItemGroup>
   <ItemGroup>
-    <GameReference Include="Avalonia.Base;Avalonia.Controls;Game2.Client;Game2.Simulation;VRage.Core;VRage.Core.Game;VRage.Library;VRage.Multiplayer;VRage.UI;VRage.UI.Shared;VRage.Input;VRage.DCS;VRage.Physics" />
+    <GameReference Include="Avalonia.Base;Avalonia.Controls;Game2.Client;Game2.Simulation;VRage.Core;VRage.Core.Game;VRage.Library;VRage.Multiplayer;VRage.UI;VRage.UI.Shared;VRage.Input;VRage.DCS;VRage.Physics;VRage.Render" />
     <Reference Include="@(GameReference)">
       <HintPath>$(Game2Path)/%(Identity).dll</HintPath>
       <Private>false</Private>

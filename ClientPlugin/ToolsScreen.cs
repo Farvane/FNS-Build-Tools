@@ -40,6 +40,12 @@ internal sealed class ToolsScreen : ScreenView
         var cor = new WrapPanel();
         cor.Children.Add(Action("All axes → CoR", s => s.SetToCenterOfRoom(corridor: false)));
         cor.Children.Add(Action("Corridor → CoR", s => s.SetToCenterOfRoom(corridor: true)));
+        var measure = new WrapPanel();
+        measure.Children.Add(PluginAction("Mark A / B", p => p.Measure.MarkAimed()));
+        measure.Children.Add(PluginAction("Midpoint → symmetry", p => p.Measure.MidpointToSymmetry()));
+        measure.Children.Add(PluginAction("Clear width here", p => p.Measure.ClearWidthHere()));
+        measure.Children.Add(PluginAction("Centerline readout", p => p.Measure.ToggleReadout()));
+        measure.Children.Add(PluginAction("Clear marks", p => p.Measure.ClearMarks()));
         var clear = new WrapPanel();
         clear.Children.Add(Action("Clear all planes", s => s.Clear(All)));
         var home = new WrapPanel();
@@ -51,7 +57,7 @@ internal sealed class ToolsScreen : ScreenView
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.4.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG/CoR • Home Grid", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.5.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -67,6 +73,12 @@ internal sealed class ToolsScreen : ScreenView
         });
         panel.Children.Add(cor);
         panel.Children.Add(clear);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Measure: look at a block and mark it A, then B (hotkeys work best: the screen hides your aim). Midpoint puts planes halfway between them. Clear width shows free space along each axis where you stand.",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(measure);
         panel.Children.Add(new TextBlock
         {
             Text = "Home grid: move the grid (and anything on its rotors, pistons, hinges and connectors) so its center is at world 0,0,0, square to the world axes. You move with it. A moving grid (or you) is stopped first. Refuses if another grid is in the way. Needs admin rights (fine in single-player).",
@@ -104,6 +116,27 @@ internal sealed class ToolsScreen : ScreenView
             try
             {
                 _feedback.Text = action(model.Plugin.Symmetry);
+            }
+            catch (Exception error)
+            {
+                _feedback.Text = error is InvalidOperationException
+                    ? error.Message
+                    : "Failed (" + error.GetType().Name + "). Check the SE2 log.";
+            }
+            Refresh();
+        };
+        return button;
+    }
+
+    private Button PluginAction(string label, Func<Plugin, string> action)
+    {
+        var button = new Button { Content = label, Margin = new Thickness(0, 0, 10, 10) };
+        button.Click += (_, _) =>
+        {
+            if (DataContext is not ToolsScreenModel model) return;
+            try
+            {
+                _feedback.Text = action(model.Plugin);
             }
             catch (Exception error)
             {

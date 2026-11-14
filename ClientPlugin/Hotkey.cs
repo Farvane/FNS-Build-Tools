@@ -75,6 +75,11 @@ public static class HotkeyActions
     public const string HomeGrid = "HomeGrid";
     public const string ReturnGrid = "ReturnGrid";
     public const string SymmetryToCoR = "SymmetryToCoR";
+    public const string MeasureMark = "MeasureMark";
+    public const string MeasureClear = "MeasureClear";
+    public const string MidpointSymmetry = "MidpointSymmetry";
+    public const string ClearWidth = "ClearWidth";
+    public const string CenterlineReadout = "CenterlineReadout";
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
@@ -87,5 +92,11 @@ public static class HotkeyActions
         [HomeGrid] = "Ctrl+Alt+O",
         [ReturnGrid] = "Ctrl+Alt+Shift+O",
         [SymmetryToCoR] = "Ctrl+Shift+N",
+        // Measuring: the unbound punctuation cluster next to N (; ' /).
+        [MeasureMark] = "Ctrl+Alt+OemSemicolon",
+        [MeasureClear] = "Ctrl+Alt+Shift+OemSemicolon",
+        [MidpointSymmetry] = "Ctrl+Alt+OemQuotes",
+        [ClearWidth] = "Ctrl+Alt+OemForwardSlash",
+        [CenterlineReadout] = "Ctrl+Alt+Shift+OemForwardSlash",
     };
 }

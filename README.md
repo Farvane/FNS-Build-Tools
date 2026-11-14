@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.4.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.5.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -20,7 +20,10 @@ connectors moves with it, and so do you. **Return** undoes the move.
 v0.4 adds **Symmetry to CoR (Center of Room)**. It sets the planes to the center
 of the enclosed room you are standing in.
 
-Planned next: measuring tools and an asymmetry finder. See [docs/DESIGN.md](docs/DESIGN.md).
+v0.5 adds **measuring tools**: Tape between two blocks, Midpoint → symmetry,
+clear width where you stand, and a live centerline offset readout.
+
+Planned next: asymmetry finder, grid info panel, plane nudge, axis camera views. See [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Install
 
@@ -36,6 +39,26 @@ Planned next: measuring tools and an asymmetry finder. See [docs/DESIGN.md](docs
    target grid's size per axis and its current planes.
 3. Click **All axes → CoG**, or a single axis. Turn on symmetry mode in the block
    placer to see the planes.
+
+## Measure
+
+With a block equipped:
+
+- **Tape:** look at a block and press `Ctrl+Alt+;` to mark **A** (green). Look
+  at another block on the same grid and press it again to mark **B** (blue). A
+  line joins their centers. The label shows the center-to-center distance and
+  the outer size, face to face, on each axis. A third press starts a new
+  measurement. `Ctrl+Alt+Shift+;` clears the marks.
+- **Midpoint → symmetry:** `Ctrl+Alt+'` puts symmetry planes halfway between A
+  and B, on every axis where they differ.
+- **Clear width:** `Ctrl+Alt+/` measures the free space through where you stand
+  along X, Y and Z, up to 100 m each way, and draws it for 10 seconds. "Open"
+  means no wall was found on one side.
+- **Centerline readout:** `Ctrl+Alt+Shift+/` toggles a label above the aimed
+  block showing its signed offset from each active symmetry plane.
+
+Overlays draw only while a block is equipped, because they use the block
+placer's own 3D overlay, the same one that draws vanilla symmetry planes.
 
 ## Symmetry to CoR
 
@@ -87,6 +110,11 @@ the screen confirms each action.
 | `Ctrl+Alt+O` | Home Grid by CoG (Origin) |
 | `Ctrl+Alt+Shift+O` | Return the homed grid |
 | `Ctrl+Shift+N` | Set all symmetry planes to CoR (Center of Room) |
+| `Ctrl+Alt+;` | Measure: mark the aimed block A, then B |
+| `Ctrl+Alt+Shift+;` | Measure: clear marks |
+| `Ctrl+Alt+'` | Symmetry planes at the A↔B midpoint |
+| `Ctrl+Alt+/` | Clear width where you stand |
+| `Ctrl+Alt+Shift+/` | Toggle the centerline offset readout |
 
 Vanilla reacts to its own keys even while Ctrl+Alt is held. For example, `G` opens the block picker. The defaults therefore use keys that vanilla gameplay leaves unbound (`I`, `N` and `O`). Pick unbound keys when customizing. Modifiers must match exactly. To change a hotkey, close SE2 and edit
 `settings.json` in the plugin's Pulsar configuration folder (the screen shows
@@ -127,6 +155,11 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [x] CoR in an L-shaped room / with a doorway open to a corridor: planes at the combined bounding box center.
 - [x] Corridor → CoR in a long corridor: only the two cross axes change.
 - [x] CoR with a hole to space, or standing outside: refuses, nothing changes.
+- [ ] Tape: A/B outlines, line and label appear; distances match counted blocks (0.5 m and 2.5 m blocks).
+- [ ] Midpoint → symmetry: plane lands halfway; mirrored placement from A lands on B.
+- [ ] Clear width: lines and labels in a corridor match its width/height; "open" when facing space.
+- [ ] Centerline readout: offsets read 0.00 on the plane and ± either side.
+- [ ] `;` `'` `/` with Ctrl+Alt do not trigger anything vanilla.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

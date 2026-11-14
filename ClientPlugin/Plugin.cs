@@ -24,6 +24,7 @@ public sealed class Plugin : IPlugin, IDisposable
 
     internal SymmetryController Symmetry { get; } = new();
     internal HomeController Home { get; }
+    internal MeasureController Measure { get; }
     internal HotkeyController? Hotkeys { get; }
     internal string? SettingsFile { get; }
     internal string? SettingsError { get; }
@@ -31,6 +32,7 @@ public sealed class Plugin : IPlugin, IDisposable
     public Plugin()
     {
         Home = new HomeController(Symmetry);
+        Measure = new MeasureController(Symmetry);
         var settings = new Settings();
         try
         {
@@ -55,6 +57,11 @@ public sealed class Plugin : IPlugin, IDisposable
                     [HotkeyActions.SymmetryToCoG] = () => Toast(() => Symmetry.SetToCenterOfGrid(All)),
                     [HotkeyActions.ClearSymmetry] = () => Toast(() => Symmetry.Clear(All)),
                     [HotkeyActions.SymmetryToCoR] = () => Toast(() => Symmetry.SetToCenterOfRoom(corridor: false)),
+                    [HotkeyActions.MeasureMark] = () => Toast(Measure.MarkAimed),
+                    [HotkeyActions.MeasureClear] = () => Toast(Measure.ClearMarks),
+                    [HotkeyActions.MidpointSymmetry] = () => Toast(Measure.MidpointToSymmetry),
+                    [HotkeyActions.ClearWidth] = () => Toast(Measure.ClearWidthHere),
+                    [HotkeyActions.CenterlineReadout] = () => Toast(Measure.ToggleReadout),
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
                     [HotkeyActions.HomeGrid] = () => ToastLater(report => Home.Home(useCenterOfMass: false, report)),
                     [HotkeyActions.ReturnGrid] = () => ToastLater(Home.Return),
@@ -130,6 +137,7 @@ public sealed class Plugin : IPlugin, IDisposable
     public void Dispose()
     {
         Hotkeys?.Dispose();
+        Measure.Dispose();
         Symmetry.Dispose();
     }
 }

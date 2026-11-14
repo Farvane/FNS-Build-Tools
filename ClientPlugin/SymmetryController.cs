@@ -138,10 +138,7 @@ internal sealed class SymmetryController : IDisposable
     public string SetToCenterOfRoom(bool corridor)
     {
         var target = RequireTarget(out var grid);
-        var character = LocalCharacter() ?? throw new InvalidOperationException("Your character is unavailable");
-        var body = EntityTransformFunctions.GetWorldTransform(character.Data);
-        var torso = body.Position + WorldTransform.TransformDirection(new Vector3D(0, 1, 0), body) * TorsoHeight;
-        var cell = CubeGridCoords.WorldToGrid(torso, target.WorldTransform);
+        var cell = PlayerCell(target.WorldTransform);
         var bounds = Bounds(grid);
         var storage = grid.CubeBlockStorage;
         var room = RoomFill.Fill((cell.X, cell.Y, cell.Z), (bounds.X.Min, bounds.Y.Min, bounds.Z.Min),
@@ -161,6 +158,18 @@ internal sealed class SymmetryController : IDisposable
         return string.Format(CultureInfo.InvariantCulture, "Symmetry set to CoR on {0}. Room {1:0.00} × {2:0.00} × {3:0.00} m",
             Names(axes), room.X.Meters, room.Y.Meters, room.Z.Meters);
     }
+
+    /// <summary>The grid cell at the local character's torso (about 0.9 m along its up axis).</summary>
+    internal Vector3I PlayerCell(WorldTransform gridTransform)
+    {
+        var character = LocalCharacter() ?? throw new InvalidOperationException("Your character is unavailable");
+        var body = EntityTransformFunctions.GetWorldTransform(character.Data);
+        var torso = body.Position + WorldTransform.TransformDirection(new Vector3D(0, 1, 0), body) * TorsoHeight;
+        return CubeGridCoords.WorldToGrid(torso, gridTransform);
+    }
+
+    /// <summary>The local block placer, while one exists (a world is loaded).</summary>
+    internal BlockPlacerEntityComponent? Placer => _placer is not null && _placer.TryGetTarget(out var placer) ? placer : null;
 
     public string Clear(params int[] axes)
     {
