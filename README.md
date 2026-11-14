@@ -1,7 +1,7 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.2.1 preview.** Symmetry to CoG is verified in-game (single-player). Home
-Grid is new and not yet tested in-game. An optional Pulsar Modern client
+**v0.2.1 preview.** Symmetry to CoG and Home Grid are verified in-game
+(single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
 v0.1 sets a grid's X, Y and Z symmetry planes to its **CoG (Center of
@@ -87,16 +87,16 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [x] All axes → CoG: planes appear centered; mirrored placement lands symmetric.
 - [ ] Even- and odd-width test grids both center exactly.
 - [ ] Single-axis buttons change only that axis; Clear removes all planes.
-- [ ] Planes persist after save/reload.
+- [ ] Planes persist after save/reload. (A homed grid saved without errors.)
 - [ ] `Ctrl+Alt+N` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input. (v0.1.2 with `G` set the planes but also opened the block picker.)
 - [ ] Hotkeys do nothing without a block equipped, in chat, or in menus.
 - [ ] Vanilla does not react to `N` or `I` while Ctrl+Alt is held.
-- [ ] Home (CoG): grid lands centered on 0,0,0, square to the world axes; you arrive beside it as before.
+- [x] Home (CoG): grid lands centered on 0,0,0, square to the world axes; you arrive beside it as before.
 - [ ] Home with a rotor/piston/hinge subgrid: the subgrid moves too and stays attached (no snapping or explosion).
 - [ ] Home with a ship docked by connector: both move together.
 - [ ] Home (CoM): the pivot is the center of mass. Compare with the game's CoM indicator if one is visible.
 - [ ] Moving grid: Home refuses with "The grid is moving".
-- [ ] Return restores the grid, subgrids and you.
+- [x] Return restores the grid and you.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development
