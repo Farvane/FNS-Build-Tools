@@ -45,6 +45,7 @@ public sealed class Plugin : IPlugin, IDisposable
             SettingsError = "settings.json not loaded (" + error.GetType().Name + "); using default hotkeys";
             Log.Default.WriteLine(Label + SettingsError);
         }
+        Home.ClearanceCheck = settings.HomeClearanceCheck;
         if (!Symmetry.IsSupported) return;
         try
         {

@@ -89,4 +89,20 @@ public class HotkeyTests
             Assert.DoesNotContain(hotkey.Key, VanillaBound);
         }
     }
+
+    [Fact]
+    public void Clearance_check_defaults_on_and_can_be_disabled()
+    {
+        Assert.True(new Settings().HomeClearanceCheck);
+        var file = Path.Combine(Path.GetTempPath(), "fns-build-tools-" + Guid.NewGuid() + ".json");
+        try
+        {
+            File.WriteAllText(file, "{\"HomeClearanceCheck\":false}");
+            Assert.False(Settings.Load(file).HomeClearanceCheck);
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
 }

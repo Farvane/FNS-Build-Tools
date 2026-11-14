@@ -9,6 +9,9 @@ public sealed class Settings
 {
     public bool HotkeysEnabled { get; set; } = true;
 
+    /// <summary>Home Grid refuses to land on other grids at the origin.</summary>
+    public bool HomeClearanceCheck { get; set; } = true;
+
     /// <summary>Action name → chord. Missing actions use <see cref="HotkeyActions.Defaults"/>; "" disables one.</summary>
     public Dictionary<string, string> Hotkeys { get; set; } = new(StringComparer.Ordinal);
 

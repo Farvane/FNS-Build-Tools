@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.2.1 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.2.2 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -36,8 +36,7 @@ Planned next: Center of Room symmetry, measuring tools and an asymmetry finder. 
 
 ## Home Grid
 
-1. Stop the grid. Home Grid refuses a moving grid.
-2. With a block equipped, look at the grid and press `Ctrl+Alt+O`, or use
+1. With a block equipped, look at the grid and press `Ctrl+Alt+O`, or use
    **Home grid (CoG)** or **Home grid (CoM)** on the screen.
 3. The grid moves so the pivot is at 0,0,0, with the grid's axes on the world
    axes. Grids joined by rotors, pistons, hinges and connectors (the game's
@@ -46,9 +45,18 @@ Planned next: Center of Room symmetry, measuring tools and an asymmetry finder. 
 4. `Ctrl+Alt+Shift+O` (or **Return grid**) puts everything back. Return works
    until the next Home.
 
+**Moving grids.** If the grid or you are moving, Home first stops the whole
+group, waits up to 3 s for everything to read still, and then moves it. Home
+also stops the group again afterwards, so everything arrives at rest. Stopping
+uses the game's in-process server, so it works in single-player and when you
+host. As a client on a remote server, Home still refuses a moving grid.
+
+**Clearance.** Home refuses if another grid's bounds (plus 0.5 m) would overlap
+where the group lands, and names the grid in the way. To turn the check off,
+set `"HomeClearanceCheck": false` in `settings.json`.
+
 Home Grid uses the game's admin teleport, which is checked on the server.
-Single-player works. On a server you need admin rights. It does not check
-whether something else is already at the origin, so clear the area first.
+Single-player works. On a server you need admin rights. 
 
 ## Hotkeys
 
@@ -88,14 +96,15 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [ ] Even- and odd-width test grids both center exactly.
 - [ ] Single-axis buttons change only that axis; Clear removes all planes.
 - [ ] Planes persist after save/reload. (A homed grid saved without errors.)
-- [ ] `Ctrl+Alt+N` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input. (v0.1.2 with `G` set the planes but also opened the block picker.)
-- [ ] Hotkeys do nothing without a block equipped, in chat, or in menus.
-- [ ] Vanilla does not react to `N` or `I` while Ctrl+Alt is held.
+- [x] `Ctrl+Alt+N` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input. (v0.1.2 with `G` set the planes but also opened the block picker.)
+- [x] Hotkeys do nothing without a block equipped, in chat, or in menus.
+- [x] Vanilla does not react to `N` or `I` while Ctrl+Alt is held.
 - [x] Home (CoG): grid lands centered on 0,0,0, square to the world axes; you arrive beside it as before.
-- [ ] Home with a rotor/piston/hinge subgrid: the subgrid moves too and stays attached (no snapping or explosion).
-- [ ] Home with a ship docked by connector: both move together.
-- [ ] Home (CoM): the pivot is the center of mass. Compare with the game's CoM indicator if one is visible.
-- [ ] Moving grid: Home refuses with "The grid is moving".
+- [x] Home with a rotor/piston/hinge subgrid: the subgrid moves too and stays attached (no snapping or explosion).
+- [x] Home with a ship docked by connector: both move together.
+- [x] Home (CoM): the pivot is the center of mass. Compare with the game's CoM indicator if one is visible.
+- [ ] Moving grid (and moving player): Home stops everything, then homes; group arrives at rest.
+- [ ] Clearance: with another grid at the origin, Home refuses and names it; nothing moves.
 - [x] Return restores the grid and you.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 

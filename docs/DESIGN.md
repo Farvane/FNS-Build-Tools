@@ -173,8 +173,8 @@ planes. Investigate reusing it.
 | --- | --- |
 | v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Built; in-game test pending.** |
 | v0.1.1 | Hotkeys with a click-through confirmation message; configurable in `settings.json`. **Built; in-game test pending.** |
-| v0.2.1 | Home Grid (CoG/CoM) + Return, moving the Terminal group and the player. **Verified in-game (single grid, single-player).** Subgrid group still to confirm. |
-| v0.2.x | Clearance check at the origin |
+| v0.2.1 | Home Grid (CoG/CoM) + Return, moving the Terminal group and the player. **Verified in-game (single-player):** CoG, CoM, rotor/piston/hinge subgrids, connector-docked ship, Return. |
+| v0.2.2 | Stop-then-home for moving grids/player (`IGameServer.StopEntityMovement`, in-process server only) and an origin clearance check (`GridIdSessionComponent` registry, world AABB overlap + 0.5 m). **Built; in-game test pending.** |
 | v0.3 | Tape, Midpoint, Clear width |
 | v0.4 | Symmetry to CoR with Corridor mode |
 | later | Subgrids for Home, asymmetry finder, camera views, MP/admin validation |
