@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<PluginData xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GitHubPlugin">
+  <Id>B2C340B1-EB44-4F40-8AF3-B48D5122441F</Id>
+  <RepoId>Farvane/FNS-Build-Tools</RepoId>
+  <FriendlyName>[FNS] GRIDWORX - Build Tools</FriendlyName>
+  <Author>Farvane Naval Systems</Author>
+  <Tooltip>Precision construction helpers: symmetry to Center of Grid.</Tooltip>
+  <Description>Sets a grid's X, Y and Z symmetry planes to the center of its block bounding box in one click. Uses the game's own replicated symmetry call. Planned: move grid to origin, Center of Room symmetry, and measuring tools.</Description>
+  <SourceDirectories>
+    <Directory>ClientPlugin</Directory>
+  </SourceDirectories>
+  <Runtimes>CoreCLR</Runtimes>
+  <Platforms>Windows</Platforms>
+</PluginData>

@@ -5,6 +5,16 @@ local VRAGE3 index (`scripts/query-vrage3.ps1` in dev-environment). That is
 discovery evidence only. Confirm each one against the installed SE2 build
 before relying on it.
 
+## Decisions (2026-11-14)
+
+- **CoG** = the center of the grid's block bounding box. **CoM** is offered as
+  a separate pivot option.
+- **Square** = align exactly to the world axes: grid forward = world forward,
+  with an identity rotation. The "nearest 90°" mode is dropped.
+- Grids attached by **rotors, pistons and connectors move with** the targeted
+  grid as one rigid group.
+- All backlog ideas are planned, not optional.
+
 ## Terms
 
 | Term | Meaning |
@@ -32,10 +42,10 @@ Aim at a grid, press the hotkey:
 
 Options:
 
-- *Square mode*: `Identity` (grid forward = world forward) or `Nearest 90°`
-  (snap to the closest axis-aligned rotation, which keeps the grid's rough
-  facing).
+- *Orientation*: always identity. Grid forward = world forward.
 - *Pivot*: CoG (default), CoM, or the aimed block.
+- *Group*: rotor, piston and connector subgrids move with the same delta.
+  `CubeGridComponent.GetAllGridsInShip()` is the candidate for gathering them.
 - *Clearance check*: refuse, or offset along +Y, if another entity's bounds
   overlap the destination.
 
@@ -60,15 +70,24 @@ and `RemoveSymmetryPlaneByAxis(SymmetryPlaneAxis)` in
 `int32.MaxValue` = a disabled plane. The planes are grid data, so they are
 probably saved and replicated with the grid.
 
-**Open question:** the plane position is an `int`. Find out whether it is a
-cell index, which can only express odd-span centers, or a half-cell index,
-which can express both. SE1 used a cell index plus an "odd" flag. This decides
-whether even-span centering is possible. Test it by placing planes by hand and
-reading the value back.
+**Resolved from metadata and IL (SE2 4.0.0.3169):**
 
-Also verify whether calling it locally replicates, or whether the client must
-go through the same request path as the block placer
-(`BlockPlacementSymmetrySetup`).
+- A grid cell is 0.25 m (`CubeGridCoords.GridToLocal` = `cell · 0.25`). Grid
+  boxes are max-inclusive.
+- The plane `distance` is in **doubled-cell** units. `ReflectPoint` maps
+  `p → 2·distance − p`. So half-cell planes are representable, and both
+  odd and even spans center exactly.
+- The vanilla setup places a box-centered plane at
+  `2·Min + GetPlaneOffsetFromBlock(size, 0)` = `2·Min + size − 1` = `Min + Max`.
+  **CoG distance per axis = `Min + Max`** of the union of block AABBs.
+- `BuildingInfoComponent.AddSymmetryPlane` is a signal with
+  replication-forwarding generated code. Vanilla
+  `BlockPlacementSymmetrySetup.PlaceCurrentAxis` calls it through
+  `PlacementTarget.AddSymmetryPlane`, and v0.1 calls the same method on
+  `GridPlacementTarget`.
+
+Still to verify in-game: calling it from a UI button behaves like vanilla's
+build-input flow, in both single-player and multiplayer.
 
 ## 3. Symmetry to CoR (expansion)
 
@@ -119,7 +138,8 @@ planes. Investigate reusing it.
 
 | Version | Scope |
 | --- | --- |
-| v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player |
+| v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Built; in-game test pending.** |
+| v0.1.x | Hotkeys (`Ctrl+Alt+G`) so the Pulsar screen is not required |
 | v0.2 | Home Grid + Return for a single grid; clearance check |
 | v0.3 | Tape, Midpoint, Clear width |
 | v0.4 | Symmetry to CoR with Corridor mode |
