@@ -39,12 +39,16 @@ internal sealed class ToolsScreen : ScreenView
         cog.Children.Add(Action("Z → CoG", s => s.SetToCenterOfGrid(2)));
         var clear = new WrapPanel();
         clear.Children.Add(Action("Clear all planes", s => s.Clear(All)));
+        var home = new WrapPanel();
+        home.Children.Add(LaterAction("Home grid (CoG)", (p, report) => p.Home.Home(useCenterOfMass: false, report)));
+        home.Children.Add(LaterAction("Home grid (CoM)", (p, report) => p.Home.Home(useCenterOfMass: true, report)));
+        home.Children.Add(LaterAction("Return grid", (p, report) => p.Home.Return(report)));
         var close = new Button { Content = "Close", HorizontalAlignment = HorizontalAlignment.Left };
         close.Click += (_, _) => Dispose();
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.1.3 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to Center of Grid", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.2.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG • Home Grid", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -54,6 +58,12 @@ internal sealed class ToolsScreen : ScreenView
         panel.Children.Add(_status);
         panel.Children.Add(cog);
         panel.Children.Add(clear);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Home grid: move the grid (and anything on its rotors, pistons, hinges and connectors) so its center is at world 0,0,0, square to the world axes. You move with it. Stop the grid first. Needs admin rights (fine in single-player).",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(home);
         panel.Children.Add(_feedback);
         panel.Children.Add(close);
         var border = new Border
@@ -93,6 +103,34 @@ internal sealed class ToolsScreen : ScreenView
                     : "Failed (" + error.GetType().Name + "). Check the SE2 log.";
             }
             Refresh();
+        };
+        return button;
+    }
+
+    private Button LaterAction(string label, Action<Plugin, Action<string>> start)
+    {
+        var button = new Button { Content = label, Margin = new Thickness(0, 0, 10, 10) };
+        button.Click += (_, _) =>
+        {
+            if (DataContext is not ToolsScreenModel model) return;
+            button.IsEnabled = false;
+            _feedback.Text = "Working…";
+            Action<string> done = message =>
+            {
+                button.IsEnabled = true;
+                _feedback.Text = message;
+                Refresh();
+            };
+            try
+            {
+                start(model.Plugin, done);
+            }
+            catch (Exception error)
+            {
+                done(error is InvalidOperationException
+                    ? error.Message
+                    : "Failed (" + error.GetType().Name + "). Check the SE2 log.");
+            }
         };
         return button;
     }

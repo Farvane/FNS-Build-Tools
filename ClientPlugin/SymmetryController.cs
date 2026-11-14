@@ -1,8 +1,10 @@
 using System;
 using HarmonyLib;
 using Keen.Game2.Client.GameSystems.BlockPlacement.BlockPlacer;
+using Keen.Game2.Client.GameSystems.PlayerControl;
 using Keen.Game2.Simulation.GameSystems.BlockPlacement;
 using Keen.Game2.Simulation.WorldObjects.CubeGrids;
+using Keen.VRage.DCS.Components;
 using Keen.VRage.Library.Diagnostics;
 using Keen.VRage.Library.Mathematics;
 
@@ -21,6 +23,8 @@ internal sealed class SymmetryController : IDisposable
 
     private static readonly AccessTools.FieldRef<BlockPlacerEntityComponent, WeakPlacementTarget> LastLookedAtGrid =
         AccessTools.FieldRefAccess<BlockPlacerEntityComponent, WeakPlacementTarget>("_lastLookedAtGrid");
+    private static readonly AccessTools.FieldRef<BlockPlacerEntityComponent, ClientPlayersSessionComponent> Players =
+        AccessTools.FieldRefAccess<BlockPlacerEntityComponent, ClientPlayersSessionComponent>("_players");
     private static readonly AccessTools.FieldRef<GridPlacementTarget, CubeGridComponent> TargetGrid =
         AccessTools.FieldRefAccess<GridPlacementTarget, CubeGridComponent>("_grid");
 
@@ -129,11 +133,18 @@ internal sealed class SymmetryController : IDisposable
 
     private static string Names(int[] axes) => string.Join("/", Array.ConvertAll(axes, a => "XYZ"[a].ToString()));
 
-    private GridPlacementTarget RequireTarget(out CubeGridComponent grid)
+    internal GridPlacementTarget RequireTarget(out CubeGridComponent grid)
     {
         if (_unsupported is not null) throw new InvalidOperationException(_unsupported);
         if (!TryGetTarget(out var target, out grid, out var reason)) throw new InvalidOperationException(reason);
         return target;
+    }
+
+    /// <summary>The locally controlled character (bottom of the control stack), as vanilla's debug teleport uses.</summary>
+    internal Entity? LocalCharacter()
+    {
+        if (_placer is null || !_placer.TryGetTarget(out var placer)) return null;
+        return Players(placer)?.LocalPlayerController?.GetBottomControllable()?.Entity;
     }
 
     private bool TryGetTarget(out GridPlacementTarget target, out CubeGridComponent grid, out string reason)
@@ -168,7 +179,7 @@ internal sealed class SymmetryController : IDisposable
     }
 
     // Matches CubeGridComponent.ComputeBoundingBox: the union of every block's cell AABB.
-    private static GridSpans Bounds(CubeGridComponent grid)
+    internal static GridSpans Bounds(CubeGridComponent grid)
     {
         var box = BoundingBoxI.CreateInvalid();
         foreach (var block in grid.CubeBlockStorage.GetAllCubeBlocks())
@@ -188,7 +199,7 @@ internal sealed class SymmetryController : IDisposable
         _placer = null;
     }
 
-    private readonly record struct GridSpans(CellSpan X, CellSpan Y, CellSpan Z)
+    internal readonly record struct GridSpans(CellSpan X, CellSpan Y, CellSpan Z)
     {
         public CellSpan Get(int axis) => axis switch { 0 => X, 1 => Y, _ => Z };
     }

@@ -72,14 +72,18 @@ public static class HotkeyActions
     public const string SymmetryToCoG = "SymmetryToCoG";
     public const string ClearSymmetry = "ClearSymmetry";
     public const string OpenBuildTools = "OpenBuildTools";
+    public const string HomeGrid = "HomeGrid";
+    public const string ReturnGrid = "ReturnGrid";
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         // Vanilla matches its key binds regardless of modifiers, so defaults use keys
         // no vanilla gameplay input binds (SE2 4.0.0.3169: I, N, O are free; G opens
-        // the block picker). O is reserved for Home Grid ("Origin").
+        // the block picker). O = Origin.
         [SymmetryToCoG] = "Ctrl+Alt+N",
         [ClearSymmetry] = "Ctrl+Alt+Shift+N",
         [OpenBuildTools] = "Ctrl+Alt+I",
+        [HomeGrid] = "Ctrl+Alt+O",
+        [ReturnGrid] = "Ctrl+Alt+Shift+O",
     };
 }

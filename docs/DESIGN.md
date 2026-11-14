@@ -60,6 +60,34 @@ they tear off. Static grids may refuse transforms. Planet gravity makes the
 origin a bad place on planets, so this is aimed at the Design Range or empty
 space.
 
+### Home Grid implementation notes (v0.2.0, SE2 4.0.0.3169)
+
+- `EntityAdmin.TeleportEntity` carries `[Server("ValidateAdminAccess")]`. A
+  client call becomes a server-run, admin-checked request. It calls
+  `EntityTransformFunctions.Teleport`, which sets the transform plus the
+  `Teleported` flag and does not clear velocity, so v0.2 refuses moving grids.
+- Group = `CubeGridComponent.GetAllGridsInShip()`, which is the **Terminal**
+  connection group (`a5bd777b-…`). In vanilla content its users are connectors,
+  hinges, pistons and rotors. **Physical** (`262d50d2-…`) is broader; blueprint
+  pasting uses it.
+- Conventions come from the IL. A world point is
+  `Position + rotate(local, Orientation)`, and
+  `GetRelativeTransform(child, parent)` gives
+  `(TransformInv(child.Pos, parent), conj(parent.Ori)·child.Ori)`. Vanilla fast
+  travel moves each entity to `relativeToAnchor * targetAnchor`, and Home Grid
+  uses the same composition with `target = (−pivot_local, identity)`. Before
+  sending, a self-check confirms `rel * old_main ≈ old`, and aborts if not.
+- Vanilla fast travel teleports the whole group inside one `Scene.MoveToDCS`
+  phase. Home Grid instead sends one request per entity in the same frame, in
+  order: main grid, then the other grids, then the character. Whether the
+  server applies them all before a physics step is the main in-game test.
+- **No C# `async`.** Game2.Client defines its own `AsyncVoidMethodBuilder`
+  (compiler warning CS1685), and `NetworkStory.Task` is
+  `Keen.VRage.Library.Threading.Task`. Results are polled on the UI thread
+  with `IsCompleted` and `GetAwaiter().GetExceptionResult()`.
+- CoM = `RigidBodyMassProperties.CenterOfMass`, assumed to be grid-local. This
+  is verified in-game.
+
 ## 2. Symmetry to CoG
 
 One action sets all three planes, or one axis via a modifier, to the CoG.
@@ -140,7 +168,8 @@ planes. Investigate reusing it.
 | --- | --- |
 | v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Built; in-game test pending.** |
 | v0.1.1 | Hotkeys with a click-through confirmation message; configurable in `settings.json`. **Built; in-game test pending.** |
-| v0.2 | Home Grid + Return for a single grid; clearance check |
+| v0.2.0 | Home Grid (CoG/CoM) + Return, moving the Terminal group and the player. **Built; in-game test pending.** |
+| v0.2.x | Clearance check at the origin |
 | v0.3 | Tape, Midpoint, Clear width |
 | v0.4 | Symmetry to CoR with Corridor mode |
 | later | Subgrids for Home, asymmetry finder, camera views, MP/admin validation |
@@ -168,6 +197,11 @@ block placer's `Init` hook, after a world has loaded.
 
 Planned chords:
 
-- `Ctrl+Alt+H` Home Grid · `Ctrl+Alt+R` Return
-- `Ctrl+Alt+G` Symmetry to CoG · `Ctrl+Alt+C` Symmetry to CoR
-- `Ctrl+Alt+M` Tape mark A/B · `Ctrl+Alt+W` Clear width
+Defaults use only keys that vanilla gameplay leaves unbound, because vanilla
+matches its key binds whatever modifiers are held. As of SE2 4.0.0.3169 the
+only free letters are I, N and O. Further tools will need non-letter keys
+(for example Insert, F3, F10, OemPlus or OemMinus) or the screen.
+
+- `Ctrl+Alt+N` Symmetry to CoG · `Ctrl+Alt+Shift+N` clear
+- `Ctrl+Alt+O` Home Grid · `Ctrl+Alt+Shift+O` Return
+- `Ctrl+Alt+I` open Build Tools

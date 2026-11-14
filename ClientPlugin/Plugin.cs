@@ -23,12 +23,14 @@ public sealed class Plugin : IPlugin, IDisposable
 #pragma warning restore CS0649
 
     internal SymmetryController Symmetry { get; } = new();
+    internal HomeController Home { get; }
     internal HotkeyController? Hotkeys { get; }
     internal string? SettingsFile { get; }
     internal string? SettingsError { get; }
 
     public Plugin()
     {
+        Home = new HomeController(Symmetry);
         var settings = new Settings();
         try
         {
@@ -52,6 +54,8 @@ public sealed class Plugin : IPlugin, IDisposable
                     [HotkeyActions.SymmetryToCoG] = () => Toast(() => Symmetry.SetToCenterOfGrid(All)),
                     [HotkeyActions.ClearSymmetry] = () => Toast(() => Symmetry.Clear(All)),
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
+                    [HotkeyActions.HomeGrid] = () => ToastLater(report => Home.Home(useCenterOfMass: false, report)),
+                    [HotkeyActions.ReturnGrid] = () => ToastLater(Home.Return),
                 });
             // Start only once a world is running; see HotkeyController._timer for why.
             var hotkeys = Hotkeys;
@@ -78,6 +82,25 @@ public sealed class Plugin : IPlugin, IDisposable
             message = error.Message;
         }
         ShowScreen<ToastScreen>(new ToastScreenModel(message), showCursor: false, ScreenLayer.Top);
+    }
+
+    /// <summary>Starts an action whose outcome arrives later through its report callback; shows it as a toast.</summary>
+    private void ToastLater(Action<Action<string>> start)
+    {
+        Action<string> show = message => ShowScreen<ToastScreen>(new ToastScreenModel(message), showCursor: false, ScreenLayer.Top);
+        try
+        {
+            start(show);
+        }
+        catch (InvalidOperationException error)
+        {
+            show(error.Message);
+        }
+        catch (Exception error)
+        {
+            Log.Default.WriteLine(Label + "Action failed: " + error);
+            show("Failed (" + error.GetType().Name + "). Check the SE2 log");
+        }
     }
 
     private static void ShowScreen<TView>(ScreenViewModel model, bool showCursor, ScreenLayer layer) where TView : ScreenView, new()
