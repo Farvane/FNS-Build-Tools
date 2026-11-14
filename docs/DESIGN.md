@@ -176,7 +176,7 @@ planes. Investigate reusing it.
 | v0.2.1 | Home Grid (CoG/CoM) + Return, moving the Terminal group and the player. **Verified in-game (single-player):** CoG, CoM, rotor/piston/hinge subgrids, connector-docked ship, Return. |
 | v0.2.2 | Stop-then-home for moving grids/player (`IGameServer.StopEntityMovement`, in-process server only) and an origin clearance check (`GridIdSessionComponent` registry, world AABB overlap + 0.5 m). **Built; in-game test pending.** |
 | v0.3 | Tape, Midpoint, Clear width |
-| v0.4 | Symmetry to CoR with Corridor mode |
+| v0.4.0 | Symmetry to CoR with Corridor mode: `RoomFill` (6-connected BFS over `ICubeBlockStorage.IsPositionEmpty`, bitset over the grid AABB grown by one, the shell means open, 4M-cell budget), start at the character's torso cell. **Built; in-game test pending.** |
 | later | Subgrids for Home, asymmetry finder, camera views, MP/admin validation |
 
 v0.1 comes first because it is the lowest-risk proof that the grid symmetry
@@ -216,3 +216,4 @@ only free letters are I, N and O. Further tools will need non-letter keys
 - `Ctrl+Alt+N` Symmetry to CoG · `Ctrl+Alt+Shift+N` clear
 - `Ctrl+Alt+O` Home Grid · `Ctrl+Alt+Shift+O` Return
 - `Ctrl+Alt+I` open Build Tools
+- `Ctrl+Shift+N` Symmetry to CoR

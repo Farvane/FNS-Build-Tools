@@ -74,6 +74,7 @@ public static class HotkeyActions
     public const string OpenBuildTools = "OpenBuildTools";
     public const string HomeGrid = "HomeGrid";
     public const string ReturnGrid = "ReturnGrid";
+    public const string SymmetryToCoR = "SymmetryToCoR";
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
@@ -85,5 +86,6 @@ public static class HotkeyActions
         [OpenBuildTools] = "Ctrl+Alt+I",
         [HomeGrid] = "Ctrl+Alt+O",
         [ReturnGrid] = "Ctrl+Alt+Shift+O",
+        [SymmetryToCoR] = "Ctrl+Shift+N",
     };
 }

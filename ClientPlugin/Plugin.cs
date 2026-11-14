@@ -54,6 +54,7 @@ public sealed class Plugin : IPlugin, IDisposable
                 {
                     [HotkeyActions.SymmetryToCoG] = () => Toast(() => Symmetry.SetToCenterOfGrid(All)),
                     [HotkeyActions.ClearSymmetry] = () => Toast(() => Symmetry.Clear(All)),
+                    [HotkeyActions.SymmetryToCoR] = () => Toast(() => Symmetry.SetToCenterOfRoom(corridor: false)),
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
                     [HotkeyActions.HomeGrid] = () => ToastLater(report => Home.Home(useCenterOfMass: false, report)),
                     [HotkeyActions.ReturnGrid] = () => ToastLater(Home.Return),

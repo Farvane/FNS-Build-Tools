@@ -1,9 +1,12 @@
 using System;
+using System.Globalization;
 using HarmonyLib;
 using Keen.Game2.Client.GameSystems.BlockPlacement.BlockPlacer;
 using Keen.Game2.Client.GameSystems.PlayerControl;
 using Keen.Game2.Simulation.GameSystems.BlockPlacement;
 using Keen.Game2.Simulation.WorldObjects.CubeGrids;
+using Keen.VRage.Core;
+using Keen.VRage.Core.Game.Data;
 using Keen.VRage.DCS.Components;
 using Keen.VRage.Library.Diagnostics;
 using Keen.VRage.Library.Mathematics;
@@ -122,6 +125,41 @@ internal sealed class SymmetryController : IDisposable
         var spans = Bounds(grid);
         foreach (var axis in axes) target.AddSymmetryPlane(Axes[axis], spans.Get(axis).PlaneDistance);
         return "Symmetry set to CoG on " + Names(axes) + ". Toggle symmetry mode in the block placer to see the planes.";
+    }
+
+    private const int MaxRoomCells = 4_000_000; // 0.25 m cells: ~62,500 m³
+    private const double TorsoHeight = 0.9;     // m along the character's up axis
+
+    /// <summary>
+    /// Sets symmetry to the Center of Room: the bounding box of the empty space
+    /// (6-connected, 0.25 m cells) around the player inside the target grid.
+    /// <paramref name="corridor"/> sets only the axes across the room's longest span.
+    /// </summary>
+    public string SetToCenterOfRoom(bool corridor)
+    {
+        var target = RequireTarget(out var grid);
+        var character = LocalCharacter() ?? throw new InvalidOperationException("Your character is unavailable");
+        var body = EntityTransformFunctions.GetWorldTransform(character.Data);
+        var torso = body.Position + WorldTransform.TransformDirection(new Vector3D(0, 1, 0), body) * TorsoHeight;
+        var cell = CubeGridCoords.WorldToGrid(torso, target.WorldTransform);
+        var bounds = Bounds(grid);
+        var storage = grid.CubeBlockStorage;
+        var room = RoomFill.Fill((cell.X, cell.Y, cell.Z), (bounds.X.Min, bounds.Y.Min, bounds.Z.Min),
+            (bounds.X.Max, bounds.Y.Max, bounds.Z.Max), (x, y, z) => storage.IsPositionEmpty(new Vector3I(x, y, z)), MaxRoomCells);
+        switch (room.Status)
+        {
+            case RoomStatus.Open:
+                throw new InvalidOperationException("Not inside an enclosed room: the space around you connects to the outside of the grid");
+            case RoomStatus.TooLarge:
+                throw new InvalidOperationException("The room is too large to measure (over " + MaxRoomCells.ToString("N0", CultureInfo.InvariantCulture) + " cells)");
+            case RoomStatus.StartBlocked:
+                throw new InvalidOperationException("You appear to be inside blocks; step into the room and try again");
+        }
+        var spans = new GridSpans(room.X, room.Y, room.Z);
+        var axes = corridor ? RoomFill.CorridorAxes(room) : new[] { 0, 1, 2 };
+        foreach (var axis in axes) target.AddSymmetryPlane(Axes[axis], spans.Get(axis).PlaneDistance);
+        return string.Format(CultureInfo.InvariantCulture, "Symmetry set to CoR on {0}. Room {1:0.00} × {2:0.00} × {3:0.00} m",
+            Names(axes), room.X.Meters, room.Y.Meters, room.Z.Meters);
     }
 
     public string Clear(params int[] axes)

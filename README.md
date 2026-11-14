@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.2.2 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.4.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -17,7 +17,10 @@ v0.2 adds **Home Grid**. It moves the grid so its CoG (or CoM) sits at world
 0,0,0, squared to the world axes. Anything on its rotors, pistons, hinges and
 connectors moves with it, and so do you. **Return** undoes the move.
 
-Planned next: Center of Room symmetry, measuring tools and an asymmetry finder. See [docs/DESIGN.md](docs/DESIGN.md).
+v0.4 adds **Symmetry to CoR (Center of Room)**. It sets the planes to the center
+of the enclosed room you are standing in.
+
+Planned next: measuring tools and an asymmetry finder. See [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Install
 
@@ -33,6 +36,19 @@ Planned next: Center of Room symmetry, measuring tools and an asymmetry finder. 
    target grid's size per axis and its current planes.
 3. Click **All axes → CoG**, or a single axis. Turn on symmetry mode in the block
    placer to see the planes.
+
+## Symmetry to CoR
+
+1. With a block equipped, stand inside an enclosed room of the grid and look at
+   the grid.
+2. Press `Ctrl+Shift+N`, or use **All axes → CoR** on the screen. Use
+   **Corridor → CoR** to set only the two axes across the room's longest
+   direction.
+
+The room is all the empty space connected to where you stand, in 0.25 m cells.
+Doors and other blocks count as walls, and an open doorway joins two rooms.
+If that space leaks to the outside of the grid, CoR refuses with "not inside
+an enclosed room". The planes go at the center of the room's bounding box.
 
 ## Home Grid
 
@@ -70,6 +86,7 @@ the screen confirms each action.
 | `Ctrl+Alt+I` | Open the Build Tools screen |
 | `Ctrl+Alt+O` | Home Grid by CoG (Origin) |
 | `Ctrl+Alt+Shift+O` | Return the homed grid |
+| `Ctrl+Shift+N` | Set all symmetry planes to CoR (Center of Room) |
 
 Vanilla reacts to its own keys even while Ctrl+Alt is held. For example, `G` opens the block picker. The defaults therefore use keys that vanilla gameplay leaves unbound (`I`, `N` and `O`). Pick unbound keys when customizing. Modifiers must match exactly. To change a hotkey, close SE2 and edit
 `settings.json` in the plugin's Pulsar configuration folder (the screen shows
@@ -106,6 +123,10 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [ ] Moving grid (and moving player): Home stops everything, then homes; group arrives at rest.
 - [ ] Clearance: with another grid at the origin, Home refuses and names it; nothing moves.
 - [x] Return restores the grid and you.
+- [ ] CoR in a closed room: planes centered on the room, not the ship.
+- [ ] CoR in an L-shaped room / with a doorway open to a corridor: planes at the combined bounding box center.
+- [ ] Corridor → CoR in a long corridor: only the two cross axes change.
+- [ ] CoR with a hole to space, or standing outside: refuses, nothing changes.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

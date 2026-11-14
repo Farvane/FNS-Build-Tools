@@ -37,6 +37,9 @@ internal sealed class ToolsScreen : ScreenView
         cog.Children.Add(Action("X → CoG", s => s.SetToCenterOfGrid(0)));
         cog.Children.Add(Action("Y → CoG", s => s.SetToCenterOfGrid(1)));
         cog.Children.Add(Action("Z → CoG", s => s.SetToCenterOfGrid(2)));
+        var cor = new WrapPanel();
+        cor.Children.Add(Action("All axes → CoR", s => s.SetToCenterOfRoom(corridor: false)));
+        cor.Children.Add(Action("Corridor → CoR", s => s.SetToCenterOfRoom(corridor: true)));
         var clear = new WrapPanel();
         clear.Children.Add(Action("Clear all planes", s => s.Clear(All)));
         var home = new WrapPanel();
@@ -48,7 +51,7 @@ internal sealed class ToolsScreen : ScreenView
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.2.2 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG • Home Grid", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.4.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to CoG/CoR • Home Grid", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -57,6 +60,12 @@ internal sealed class ToolsScreen : ScreenView
         panel.Children.Add(_hotkeys);
         panel.Children.Add(_status);
         panel.Children.Add(cog);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Center of Room: stand inside an enclosed room of the target grid. Corridor sets only the axes across the room's longest direction.",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(cor);
         panel.Children.Add(clear);
         panel.Children.Add(new TextBlock
         {

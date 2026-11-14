@@ -10,6 +10,7 @@
     <Compile Include="../ClientPlugin/GridMath.cs" Link="GridMath.cs" />
     <Compile Include="../ClientPlugin/Hotkey.cs" Link="Hotkey.cs" />
     <Compile Include="../ClientPlugin/Settings.cs" Link="Settings.cs" />
+    <Compile Include="../ClientPlugin/RoomFill.cs" Link="RoomFill.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
