@@ -53,7 +53,9 @@ public sealed class Plugin : IPlugin, IDisposable
                     [HotkeyActions.ClearSymmetry] = () => Toast(() => Symmetry.Clear(All)),
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
                 });
-            Hotkeys.Start();
+            // Start only once a world is running; see HotkeyController._timer for why.
+            var hotkeys = Hotkeys;
+            Symmetry.PlacerInitialized = () => hotkeys.Start();
         }
         catch (Exception error)
         {

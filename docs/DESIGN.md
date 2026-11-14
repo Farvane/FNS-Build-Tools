@@ -156,7 +156,17 @@ a per-frame job, records only a timestamp. A UI-thread timer polls
 `InputDeviceManager.Keyboard` every 30 ms, then fires an action on the press
 edge, but only if the placer ran in the last 250 ms. Actions run on the UI
 thread, like the screen's buttons. The defaults use `Ctrl+Alt` and still need
-checking against SE2's keybinds. Planned chords:
+checking against SE2's keybinds.
+
+**Startup rule (from the v0.1.1 freeze):** never touch Avalonia, including
+`Dispatcher.UIThread` and `DispatcherTimer`, from the plugin constructor.
+`Dispatcher.UIThread` is created on first access. Before the game registers
+its dispatcher, that first access caches a `NullDispatcherImpl` for the whole
+process, and the game's UI then freezes: a black screen, then a
+`RenderThreadFreeze` watchdog crash. v0.1.2 starts the hotkey timer from the
+block placer's `Init` hook, after a world has loaded.
+
+Planned chords:
 
 - `Ctrl+Alt+H` Home Grid · `Ctrl+Alt+R` Return
 - `Ctrl+Alt+G` Symmetry to CoG · `Ctrl+Alt+C` Symmetry to CoR

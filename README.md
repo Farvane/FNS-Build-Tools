@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.1.1 preview, not yet tested in-game.** An optional Pulsar Modern client
+**v0.1.2 preview, not yet tested in-game.** An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
 v0.1 sets a grid's X, Y and Z symmetry planes to its **CoG (Center of

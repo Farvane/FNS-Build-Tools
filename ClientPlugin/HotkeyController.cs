@@ -23,8 +23,12 @@ internal sealed class HotkeyController : IDisposable
     private readonly Func<bool> _placerActive;
     private readonly Dictionary<string, Action> _actions;
     private readonly List<Binding> _bindings = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(30) };
-    private bool _started;
+    // Created lazily on the UI thread. Never touch Avalonia's Dispatcher from the plugin
+    // constructor: Dispatcher.UIThread is created on first access, and before the game
+    // registers its dispatcher that access caches a NullDispatcherImpl for the whole
+    // process, which freezes the game's UI (v0.1.1 black screen / RenderThreadFreeze).
+    private DispatcherTimer? _timer;
+    private int _startRequested;
 
     public HotkeyController(Settings settings, Func<long> placerLastActiveMs, Dictionary<string, Action> actions)
     {
@@ -46,7 +50,6 @@ internal sealed class HotkeyController : IDisposable
         }
         Status = problems.Count == 0 ? "Hotkeys ready" : "Some hotkeys disabled — " + string.Join("; ", problems);
         foreach (var problem in problems) Log.Default.WriteLine(Label + "Hotkey disabled: " + problem);
-        _timer.Tick += (_, _) => Poll();
     }
 
     public string Status { get; }
@@ -56,15 +59,19 @@ internal sealed class HotkeyController : IDisposable
         foreach (var binding in _bindings) yield return binding.Hotkey + "  " + binding.Action;
     }
 
-    /// <summary>Starts polling. Safe to call from any thread, and more than once.</summary>
+    /// <summary>
+    /// Starts polling. Call only once the game UI is running (from an in-world hook),
+    /// never from the plugin constructor. Safe from any thread and more than once.
+    /// </summary>
     public void Start()
     {
-        if (_bindings.Count == 0) return;
+        if (_bindings.Count == 0 || System.Threading.Interlocked.Exchange(ref _startRequested, 1) == 1) return;
         Dispatcher.UIThread.Post(() =>
         {
-            if (_started) return;
-            _started = true;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
+            _timer.Tick += (_, _) => Poll();
             _timer.Start();
+            Log.Default.WriteLine(Label + "Hotkeys started");
         });
     }
 
@@ -89,7 +96,7 @@ internal sealed class HotkeyController : IDisposable
         }
         catch (Exception error)
         {
-            _timer.Stop();
+            _timer?.Stop();
             Log.Default.WriteLine(Label + "Hotkeys stopped: " + error.GetType().Name + " " + error.Message);
         }
     }
@@ -118,7 +125,8 @@ internal sealed class HotkeyController : IDisposable
 
     public void Dispose()
     {
-        Dispatcher.UIThread.Post(() => _timer.Stop());
+        // Only a started controller has touched the Dispatcher; never initialize it here.
+        if (_startRequested == 1) Dispatcher.UIThread.Post(() => _timer?.Stop());
     }
 
     private sealed class Binding

@@ -63,8 +63,20 @@ internal sealed class SymmetryController : IDisposable
     // The client block placer component exists only for the locally controlled character.
     private static void OnPlacerInit(BlockPlacerEntityComponent __instance)
     {
-        if (_instance is not null) _instance._placer = new WeakReference<BlockPlacerEntityComponent>(__instance);
+        if (_instance is null) return;
+        _instance._placer = new WeakReference<BlockPlacerEntityComponent>(__instance);
+        try
+        {
+            _instance.PlacerInitialized?.Invoke();
+        }
+        catch (Exception error)
+        {
+            Log.Default.WriteLine(Label + "Placer hook failed: " + error.GetType().Name + " " + error.Message);
+        }
     }
+
+    /// <summary>Raised when the local block placer initializes in a loaded world (game UI is running).</summary>
+    internal Action? PlacerInitialized { get; set; }
 
     private static void OnPlacerDestroy(BlockPlacerEntityComponent __instance)
     {
