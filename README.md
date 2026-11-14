@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.5.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.6.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -23,7 +23,9 @@ of the enclosed room you are standing in.
 v0.5 adds **measuring tools**: Tape between two blocks, Midpoint → symmetry,
 clear width where you stand, and a live centerline offset readout.
 
-Planned next: asymmetry finder, grid info panel, plane nudge, axis camera views. See [docs/DESIGN.md](docs/DESIGN.md).
+v0.6 adds a live **asymmetry finder**.
+
+Planned next: grid info panel, plane nudge, axis camera views. See [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Install
 
@@ -39,6 +41,22 @@ Planned next: asymmetry finder, grid info panel, plane nudge, axis camera views.
    target grid's size per axis and its current planes.
 3. Click **All axes → CoG**, or a single axis. Turn on symmetry mode in the block
    placer to see the planes.
+
+## Asymmetry finder
+
+With symmetry planes set and a block equipped, look at the grid and press
+`Ctrl+Alt+\`. For every active plane, each block must have a block of the
+same size at its mirrored position:
+
+- **Red:** no mirror. A dim red ghost outline shows where the mirror belongs.
+- **Orange:** a different block type sits in the mirrored spot.
+- **Yellow:** same block, different paint.
+
+Blocks that straddle a plane count as their own mirror. The finder is live. It
+rescans when blocks change, when planes change, and every 3 s (which picks up
+paint fixes). Press `Ctrl+Alt+\` again to turn it off. The tools screen shows
+the counts. Up to 300 outlines are drawn. Mirrored *orientation* is not
+checked yet, because vanilla's mirror rotations differ per block.
 
 ## Measure
 
@@ -115,6 +133,7 @@ the screen confirms each action.
 | `Ctrl+Alt+'` | Symmetry planes at the A↔B midpoint |
 | `Ctrl+Alt+/` | Clear width where you stand |
 | `Ctrl+Alt+Shift+/` | Toggle the centerline offset readout |
+| `Ctrl+Alt+\` | Toggle the live asymmetry finder |
 
 Vanilla reacts to its own keys even while Ctrl+Alt is held. For example, `G` opens the block picker. The defaults therefore use keys that vanilla gameplay leaves unbound (`I`, `N` and `O`). Pick unbound keys when customizing. Modifiers must match exactly. To change a hotkey, close SE2 and edit
 `settings.json` in the plugin's Pulsar configuration folder (the screen shows
@@ -160,6 +179,9 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [x] Clear width: lines and labels in a corridor match its width/height; "open" when facing space.
 - [x] Centerline readout: offsets read 0.00 on the plane and ± either side.
 - [x] `;` `'` `/` with Ctrl+Alt do not trigger anything vanilla.
+- [ ] Asymmetry: a symmetric ship reports "every block has its mirror".
+- [ ] Remove one block: its mirror turns red with a ghost where it was; re-adding it clears both.
+- [ ] Swap a block type / repaint one side: orange / yellow outlines appear and clear when fixed.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

@@ -177,7 +177,8 @@ planes. Investigate reusing it.
 | v0.2.2 | Stop-then-home for moving grids/player (`IGameServer.StopEntityMovement`, in-process server only) and an origin clearance check (`GridIdSessionComponent` registry, world AABB overlap + 0.5 m). **Verified in-game (single-player).** |
 | v0.5.0 | Tape (A/B marks), Midpoint → symmetry, Clear width at the player, centerline offset readout. Drawing: a Harmony postfix on `BlockPlacerEntityComponent.DrawBlockPlacement` (the vanilla per-frame UI3D job) using `UI3DDefaultRendering.DrawSelectionOutline`/`DrawLine` (world space) and `UI3DSessionComponent.AddText` (a `default` timeout means this frame only; `IMeshConsumer.TextAlignmentEnum`). Thicknesses are taken from vanilla defs (outline 3 / behind 0.75, dash 0.2). **Verified in-game (single-player).** |
 | v0.4.0 | Symmetry to CoR with Corridor mode: `RoomFill` (6-connected BFS over `ICubeBlockStorage.IsPositionEmpty`, bitset over the grid AABB grown by one, the shell means open, 4M-cell budget), start at the character's torso cell. **Verified in-game (single-player).** |
-| later | Subgrids for Home, asymmetry finder, camera views, MP/admin validation |
+| v0.6.0 | Live asymmetry finder: each block's box mirrored per active plane (`[d − max, d − min]`, doubled units) must match a block's exact AABB with the same `Definition` and `Color`. Rescans on `ICubeBlockStorage.Version`, plane change, or every 3 s. Orientation is not checked. **Built; in-game test pending.** |
+| later | Grid info panel, plane nudge, axis camera views, thrust balance, MP/admin validation |
 
 v0.1 comes first because it is the lowest-risk proof that the grid symmetry
 API can be driven from a client plugin. Home Grid moves entities, which is the
@@ -218,3 +219,4 @@ only free letters are I, N and O. Further tools will need non-letter keys
 - `Ctrl+Alt+I` open Build Tools
 - `Ctrl+Shift+N` Symmetry to CoR
 - `Ctrl+Alt+;` mark A/B · `Ctrl+Alt+Shift+;` clear · `Ctrl+Alt+'` midpoint → symmetry · `Ctrl+Alt+/` clear width · `Ctrl+Alt+Shift+/` readout
+- `Ctrl+Alt+\` asymmetry finder (live toggle)

@@ -25,6 +25,7 @@ public sealed class Plugin : IPlugin, IDisposable
     internal SymmetryController Symmetry { get; } = new();
     internal HomeController Home { get; }
     internal MeasureController Measure { get; }
+    internal AsymmetryController Asymmetry { get; }
     internal HotkeyController? Hotkeys { get; }
     internal string? SettingsFile { get; }
     internal string? SettingsError { get; }
@@ -33,6 +34,7 @@ public sealed class Plugin : IPlugin, IDisposable
     {
         Home = new HomeController(Symmetry);
         Measure = new MeasureController(Symmetry);
+        Asymmetry = new AsymmetryController(Symmetry);
         var settings = new Settings();
         try
         {
@@ -62,6 +64,7 @@ public sealed class Plugin : IPlugin, IDisposable
                     [HotkeyActions.MidpointSymmetry] = () => Toast(Measure.MidpointToSymmetry),
                     [HotkeyActions.ClearWidth] = () => Toast(Measure.ClearWidthHere),
                     [HotkeyActions.CenterlineReadout] = () => Toast(Measure.ToggleReadout),
+                    [HotkeyActions.FindAsymmetry] = () => Toast(Asymmetry.Toggle),
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
                     [HotkeyActions.HomeGrid] = () => ToastLater(report => Home.Home(useCenterOfMass: false, report)),
                     [HotkeyActions.ReturnGrid] = () => ToastLater(Home.Return),
@@ -138,6 +141,7 @@ public sealed class Plugin : IPlugin, IDisposable
     {
         Hotkeys?.Dispose();
         Measure.Dispose();
+        Asymmetry.Dispose();
         Symmetry.Dispose();
     }
 }

@@ -46,6 +46,7 @@ internal sealed class ToolsScreen : ScreenView
         measure.Children.Add(PluginAction("Clear width here", p => p.Measure.ClearWidthHere()));
         measure.Children.Add(PluginAction("Centerline readout", p => p.Measure.ToggleReadout()));
         measure.Children.Add(PluginAction("Clear marks", p => p.Measure.ClearMarks()));
+        measure.Children.Add(PluginAction("Asymmetry finder (toggle)", p => p.Asymmetry.Toggle()));
         var clear = new WrapPanel();
         clear.Children.Add(Action("Clear all planes", s => s.Clear(All)));
         var home = new WrapPanel();
@@ -57,7 +58,7 @@ internal sealed class ToolsScreen : ScreenView
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.5.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.6.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure • Asymmetry", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -203,7 +204,8 @@ internal sealed class ToolsScreen : ScreenView
         if (DataContext is not ToolsScreenModel model) return;
         try
         {
-            _status.Text = model.Plugin.Symmetry.Status;
+            _status.Text = model.Plugin.Symmetry.Status +
+                (model.Plugin.Asymmetry.Summary is { } asym ? Environment.NewLine + "Asymmetry finder (live): " + asym : "");
         }
         catch (Exception error)
         {

@@ -12,6 +12,7 @@
     <Compile Include="../ClientPlugin/Settings.cs" Link="Settings.cs" />
     <Compile Include="../ClientPlugin/RoomFill.cs" Link="RoomFill.cs" />
     <Compile Include="../ClientPlugin/Measure.cs" Link="Measure.cs" />
+    <Compile Include="../ClientPlugin/Asymmetry.cs" Link="Asymmetry.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />

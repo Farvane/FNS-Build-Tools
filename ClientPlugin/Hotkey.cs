@@ -80,6 +80,7 @@ public static class HotkeyActions
     public const string MidpointSymmetry = "MidpointSymmetry";
     public const string ClearWidth = "ClearWidth";
     public const string CenterlineReadout = "CenterlineReadout";
+    public const string FindAsymmetry = "FindAsymmetry";
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
@@ -98,5 +99,6 @@ public static class HotkeyActions
         [MidpointSymmetry] = "Ctrl+Alt+OemQuotes",
         [ClearWidth] = "Ctrl+Alt+OemForwardSlash",
         [CenterlineReadout] = "Ctrl+Alt+Shift+OemForwardSlash",
+        [FindAsymmetry] = "Ctrl+Alt+OemBackSlash",
     };
 }
