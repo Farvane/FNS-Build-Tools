@@ -27,6 +27,7 @@ internal sealed class ToolsScreen : ScreenView
     private static readonly int[] All = { 0, 1, 2 };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock _feedback = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock _hotkeys = new() { TextWrapping = TextWrapping.Wrap, Opacity = 0.85 };
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
 
     public ToolsScreen()
@@ -43,12 +44,13 @@ internal sealed class ToolsScreen : ScreenView
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.1.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to Center of Grid", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.1.1 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry to Center of Grid", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
             TextWrapping = TextWrapping.Wrap
         });
+        panel.Children.Add(_hotkeys);
         panel.Children.Add(_status);
         panel.Children.Add(cog);
         panel.Children.Add(clear);
@@ -98,6 +100,14 @@ internal sealed class ToolsScreen : ScreenView
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        if (DataContext is ToolsScreenModel model)
+        {
+            var hotkeys = model.Plugin.Hotkeys;
+            var lines = hotkeys is null ? "Hotkeys unavailable" : hotkeys.Status + " (while a block is equipped)\n  " + string.Join("\n  ", hotkeys.Describe());
+            if (model.Plugin.SettingsError is { } error) lines += "\n" + error;
+            else if (model.Plugin.SettingsFile is { } file) lines += "\nCustomize in " + file;
+            _hotkeys.Text = lines;
+        }
         Refresh();
         _timer.Start();
     }

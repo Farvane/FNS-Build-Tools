@@ -44,9 +44,12 @@ internal sealed class SymmetryController : IDisposable
                 ?? throw new InvalidOperationException("Block placer hook not found");
             var destroy = AccessTools.Method(typeof(BlockPlacerEntityComponent), "Destroy", Type.EmptyTypes)
                 ?? throw new InvalidOperationException("Block placer hook not found");
+            var active = AccessTools.Method(typeof(BlockPlacerEntityComponent), "BlockPlacerActive", Type.EmptyTypes)
+                ?? throw new InvalidOperationException("Block placer hook not found");
             _harmony = new Harmony(OwnerId);
             _harmony.Patch(init, postfix: new HarmonyMethod(typeof(SymmetryController), nameof(OnPlacerInit)));
             _harmony.Patch(destroy, postfix: new HarmonyMethod(typeof(SymmetryController), nameof(OnPlacerDestroy)));
+            _harmony.Patch(active, postfix: new HarmonyMethod(typeof(SymmetryController), nameof(OnPlacerActive)));
             _instance = this;
         }
         catch (Exception error)
@@ -68,6 +71,16 @@ internal sealed class SymmetryController : IDisposable
         if (_instance?._placer is { } weak && weak.TryGetTarget(out var current) && ReferenceEquals(current, __instance))
             _instance._placer = null;
     }
+
+    private static long _placerLastActiveMs = long.MinValue / 2;
+
+    // Runs every frame from the job system while a block is equipped (possibly off
+    // the UI thread): only record the time, never touch game or UI state here.
+    private static void OnPlacerActive() =>
+        System.Threading.Interlocked.Exchange(ref _placerLastActiveMs, Environment.TickCount64);
+
+    /// <summary><see cref="Environment.TickCount64"/> when the block placer last ran.</summary>
+    public static long PlacerLastActiveMs => System.Threading.Interlocked.Read(ref _placerLastActiveMs);
 
     public bool IsSupported => _unsupported is null;
 

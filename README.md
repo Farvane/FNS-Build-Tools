@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.1.0 preview, not yet tested in-game.** An optional Pulsar Modern client
+**v0.1.1 preview, not yet tested in-game.** An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
 v0.1 sets a grid's X, Y and Z symmetry planes to its **CoG (Center of
@@ -30,6 +30,32 @@ tools and an asymmetry finder. See [docs/DESIGN.md](docs/DESIGN.md).
 3. Click **All axes → CoG**, or a single axis. Turn on symmetry mode in the block
    placer to see the planes.
 
+## Hotkeys
+
+Hotkeys work only while a block is equipped. A short message near the top of
+the screen confirms each action.
+
+| Default | Action |
+| --- | --- |
+| `Ctrl+Alt+G` | Set all symmetry planes to CoG |
+| `Ctrl+Alt+Shift+G` | Clear all symmetry planes |
+| `Ctrl+Alt+B` | Open the Build Tools screen |
+
+Modifiers must match exactly. To change a hotkey, close SE2 and edit
+`settings.json` in the plugin's Pulsar configuration folder (the screen shows
+the path). Set an action to `""` to disable it:
+
+```json
+{
+  "HotkeysEnabled": true,
+  "Hotkeys": { "SymmetryToCoG": "Ctrl+Alt+F6", "OpenBuildTools": "" }
+}
+```
+
+Every chord needs Ctrl or Alt. Key names follow the game's keyboard inputs
+(`A`–`Z`, `D0`–`D9`, `F1`–`F24`, ...). An invalid entry disables only that
+hotkey, and the reason appears on the screen and in the SE2 log.
+
 An even cell count puts the plane on a cell boundary, and an odd count puts it
 through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 
@@ -40,6 +66,9 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [ ] Even- and odd-width test grids both center exactly.
 - [ ] Single-axis buttons change only that axis; Clear removes all planes.
 - [ ] Planes persist after save/reload.
+- [ ] `Ctrl+Alt+G` with a block equipped sets the planes and shows a message that doesn't steal mouse or keyboard input.
+- [ ] Hotkeys do nothing without a block equipped, in chat, or in menus.
+- [ ] Check whether vanilla also reacts to `G` or `B` while Ctrl+Alt is held.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

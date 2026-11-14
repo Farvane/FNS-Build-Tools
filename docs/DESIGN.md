@@ -139,7 +139,7 @@ planes. Investigate reusing it.
 | Version | Scope |
 | --- | --- |
 | v0.1 | Symmetry to CoG (all axes or one), grid info readout, single-player. **Built; in-game test pending.** |
-| v0.1.x | Hotkeys (`Ctrl+Alt+G`) so the Pulsar screen is not required |
+| v0.1.1 | Hotkeys with a click-through confirmation message; configurable in `settings.json`. **Built; in-game test pending.** |
 | v0.2 | Home Grid + Return for a single grid; clearance check |
 | v0.3 | Tape, Midpoint, Clear width |
 | v0.4 | Symmetry to CoR with Corridor mode |
@@ -149,11 +149,14 @@ v0.1 comes first because it is the lowest-risk proof that the grid symmetry
 API can be driven from a client plugin. Home Grid moves entities, which is the
 riskiest part.
 
-## Controls (draft)
+## Controls
 
-Hotkeys configurable in the Pulsar settings screen. Proposed defaults sit on a
-single modifier to avoid clashing with vanilla. Each must be checked against
-the SE2 keybinds:
+Implemented in v0.1.1. A Harmony postfix on `BlockPlacerEntityComponent.BlockPlacerActive`,
+a per-frame job, records only a timestamp. A UI-thread timer polls
+`InputDeviceManager.Keyboard` every 30 ms, then fires an action on the press
+edge, but only if the placer ran in the last 250 ms. Actions run on the UI
+thread, like the screen's buttons. The defaults use `Ctrl+Alt` and still need
+checking against SE2's keybinds. Planned chords:
 
 - `Ctrl+Alt+H` Home Grid · `Ctrl+Alt+R` Return
 - `Ctrl+Alt+G` Symmetry to CoG · `Ctrl+Alt+C` Symmetry to CoR
