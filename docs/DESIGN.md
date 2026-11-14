@@ -187,13 +187,19 @@ edge, but only if the placer ran in the last 250 ms. Actions run on the UI
 thread, like the screen's buttons. The defaults use `Ctrl+Alt` and still need
 checking against SE2's keybinds.
 
-**Startup rule (from the v0.1.1 freeze):** never touch Avalonia, including
+**Startup rule (precaution):** never touch Avalonia, including
 `Dispatcher.UIThread` and `DispatcherTimer`, from the plugin constructor.
 `Dispatcher.UIThread` is created on first access. Before the game registers
-its dispatcher, that first access caches a `NullDispatcherImpl` for the whole
-process, and the game's UI then freezes: a black screen, then a
-`RenderThreadFreeze` watchdog crash. v0.1.2 starts the hotkey timer from the
-block placer's `Init` hook, after a world has loaded.
+its dispatcher, that first access falls back to a `NullDispatcherImpl` (seen
+in the Avalonia IL). v0.1.2 starts the hotkey timer from the block placer's
+`Init` hook. **Correction:** this was first blamed for the v0.1.1 boot freeze.
+A later freeze (v0.2.0, with no constructor Avalonia access) has the
+**identical** stack, and its dump shows no plugin, Harmony or Avalonia frames.
+The render thread is waiting in `SwapChain.Resize` →
+`FlushAllQueuesAndWaitCpu` for a GPU fence that never signals, and the main
+thread waits on it in `FrameData.UpdateData.OverflowGate`. So the boot freeze
+is an intermittent render/GPU hang at the main menu, and its link to the plugin
+is unproven.
 
 Planned chords:
 
