@@ -12,6 +12,9 @@ public sealed class Settings
     /// <summary>Home Grid refuses to land on other grids at the origin.</summary>
     public bool HomeClearanceCheck { get; set; } = true;
 
+    /// <summary>Named symmetry plane sets: distances per axis in doubled cells (null = off).</summary>
+    public Dictionary<string, int?[]> PlanePresets { get; set; } = new(StringComparer.Ordinal);
+
     /// <summary>Action name → chord. Missing actions use <see cref="HotkeyActions.Defaults"/>; "" disables one.</summary>
     public Dictionary<string, string> Hotkeys { get; set; } = new(StringComparer.Ordinal);
 
@@ -24,6 +27,7 @@ public sealed class Settings
         var settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText(file))
             ?? throw new JsonException("Expected a settings object");
         settings.Hotkeys = new Dictionary<string, string>(settings.Hotkeys ?? new(), StringComparer.Ordinal);
+        settings.PlanePresets = new Dictionary<string, int?[]>(settings.PlanePresets ?? new(), StringComparer.Ordinal);
         return settings;
     }
 

@@ -81,6 +81,10 @@ public static class HotkeyActions
     public const string ClearWidth = "ClearWidth";
     public const string CenterlineReadout = "CenterlineReadout";
     public const string FindAsymmetry = "FindAsymmetry";
+    public const string NudgeAway = "NudgeAway";
+    public const string NudgeToward = "NudgeToward";
+    public const string NudgeAwayCell = "NudgeAwayCell";
+    public const string NudgeTowardCell = "NudgeTowardCell";
 
     public static readonly IReadOnlyDictionary<string, string> Defaults = new Dictionary<string, string>(StringComparer.Ordinal)
     {
@@ -100,5 +104,10 @@ public static class HotkeyActions
         [ClearWidth] = "Ctrl+Alt+OemForwardSlash",
         [CenterlineReadout] = "Ctrl+Alt+Shift+OemForwardSlash",
         [FindAsymmetry] = "Ctrl+Alt+OemBackSlash",
+        // Nudge the plane you are facing: = away, - toward; Shift for a whole cell.
+        [NudgeAway] = "Ctrl+Alt+OemEquals",
+        [NudgeToward] = "Ctrl+Alt+OemMinus",
+        [NudgeAwayCell] = "Ctrl+Alt+Shift+OemEquals",
+        [NudgeTowardCell] = "Ctrl+Alt+Shift+OemMinus",
     };
 }

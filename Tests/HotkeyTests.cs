@@ -105,4 +105,23 @@ public class HotkeyTests
             File.Delete(file);
         }
     }
+
+    [Fact]
+    public void Plane_presets_round_trip_including_off_axes()
+    {
+        var file = Path.Combine(Path.GetTempPath(), "fns-build-tools-" + Guid.NewGuid() + ".json");
+        try
+        {
+            var settings = new Settings();
+            settings.PlanePresets["Hull"] = new int?[] { 19, null, -7 };
+            settings.Save(file);
+            var loaded = Settings.Load(file);
+            Assert.Equal(new int?[] { 19, null, -7 }, loaded.PlanePresets["Hull"]);
+            Assert.Empty(Settings.Load(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json")).PlanePresets);
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
 }

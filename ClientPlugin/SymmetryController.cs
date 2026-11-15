@@ -171,6 +171,79 @@ internal sealed class SymmetryController : IDisposable
     /// <summary>The local block placer, while one exists (a world is loaded).</summary>
     internal BlockPlacerEntityComponent? Placer => _placer is not null && _placer.TryGetTarget(out var placer) ? placer : null;
 
+    /// <summary>
+    /// Moves the plane of the grid axis you are looking along by <paramref name="halfCells"/>
+    /// half-cells (0.125 m each); positive moves it away from you.
+    /// </summary>
+    public string NudgeFacing(int halfCells)
+    {
+        var target = RequireTarget(out _);
+        var forward = CameraForward() ?? throw new InvalidOperationException("Camera direction is unavailable");
+        var local = WorldTransform.TransformDirectionInv(new Vector3D(forward), target.WorldTransform);
+        var (axis, sign) = Nudge.FacingAxis(local.X, local.Y, local.Z);
+        var planes = target.BuildingInfo.SymmetryPlanes;
+        var current = axis == 0 ? planes.X : axis == 1 ? planes.Y : planes.Z;
+        if (current == GridMath.DisabledPlane)
+            throw new InvalidOperationException("You are facing along " + "XYZ"[axis] + ", which has no symmetry plane to nudge");
+        var next = Nudge.Step(current, sign * halfCells);
+        target.AddSymmetryPlane(Axes[axis], next);
+        return string.Format(CultureInfo.InvariantCulture, "{0} plane moved {1:+0.000;-0.000} m ({2})",
+            "XYZ"[axis], halfCells * GridMath.CellSize / 2, GridMath.DescribePlane("XYZ"[axis], next));
+    }
+
+    /// <summary>Active plane distances per axis for the target grid (null = off).</summary>
+    public int?[] CurrentPlanes()
+    {
+        var planes = RequireTarget(out _).BuildingInfo.SymmetryPlanes;
+        int? On(int d) => d == GridMath.DisabledPlane ? null : d;
+        return new[] { On(planes.X), On(planes.Y), On(planes.Z) };
+    }
+
+    /// <summary>Sets every axis to the given plane (or removes it when null).</summary>
+    public void ApplyPlanes(int?[] planes)
+    {
+        var target = RequireTarget(out _);
+        for (var axis = 0; axis < 3; axis++)
+        {
+            if (planes[axis] is { } d) target.AddSymmetryPlane(Axes[axis], d);
+            else target.RemoveSymmetryPlaneByAxis(Axes[axis]);
+        }
+    }
+
+    /// <summary>Size, block count, attached grids, mass and the CoM–CoG offset of the target grid.</summary>
+    public string Info()
+    {
+        if (!TryGetTarget(out var target, out var grid, out var reason)) return reason;
+        var spans = Bounds(grid);
+        var ship = 0;
+        foreach (var _ in grid.GetAllGridsInShip()) ship++;
+        var text = string.Format(CultureInfo.InvariantCulture, "Grid info: {0:0.00} × {1:0.00} × {2:0.00} m, {3:N0} blocks{4}",
+            spans.X.Meters, spans.Y.Meters, spans.Z.Meters, grid.CubeBlockStorage.CubeBlockCount,
+            ship > 1 ? ", " + (ship - 1) + " attached grid" + (ship == 2 ? "" : "s") : "");
+        if (target.RootEntity.Data.TryGet<Keen.VRage.Physics.Data.RigidBodyMassProperties>(out var mass) && mass.Mass > 0)
+        {
+            var com = mass.CenterOfMass;
+            double dx = com.X - spans.X.PlaneDistance * 0.125, dy = com.Y - spans.Y.PlaneDistance * 0.125, dz = com.Z - spans.Z.PlaneDistance * 0.125;
+            text += string.Format(CultureInfo.InvariantCulture,
+                "\n  Mass {0:N0} kg · CoM offset from CoG X {1:+0.00;-0.00;0.00} Y {2:+0.00;-0.00;0.00} Z {3:+0.00;-0.00;0.00} m",
+                mass.Mass, dx, dy, dz);
+        }
+        else
+        {
+            text += "\n  Static grid: no mass data";
+        }
+        return text;
+    }
+
+    /// <summary>World-space forward of the player's render camera.</summary>
+    internal Vector3? CameraForward()
+    {
+        if (Placer is not { } placer) return null;
+        var camera = Players(placer)?.LocalPlayerController?.CameraSystem?.RenderCameraEntity;
+        if (camera is null) return null;
+        return EntityTransformFunctions.GetWorldTransform(camera.Data).Orientation.GetForward();
+    }
+
     public string Clear(params int[] axes)
     {
         var target = RequireTarget(out _);

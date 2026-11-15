@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -28,6 +29,9 @@ internal sealed class ToolsScreen : ScreenView
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock _feedback = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock _hotkeys = new() { TextWrapping = TextWrapping.Wrap, Opacity = 0.85 };
+    private readonly TextBlock _info = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly StackPanel _presets = new() { Spacing = 6 };
+    private readonly TextBox _presetName = new() { Width = 260, Watermark = "Preset name" };
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
 
     public ToolsScreen()
@@ -53,12 +57,34 @@ internal sealed class ToolsScreen : ScreenView
         home.Children.Add(LaterAction("Home grid (CoG)", (p, report) => p.Home.Home(useCenterOfMass: false, report)));
         home.Children.Add(LaterAction("Home grid (CoM)", (p, report) => p.Home.Home(useCenterOfMass: true, report)));
         home.Children.Add(LaterAction("Return grid", (p, report) => p.Home.Return(report)));
+        var nudge = new WrapPanel();
+        nudge.Children.Add(PluginAction("Facing plane −1 cell", p => p.Symmetry.NudgeFacing(-2)));
+        nudge.Children.Add(PluginAction("−½", p => p.Symmetry.NudgeFacing(-1)));
+        nudge.Children.Add(PluginAction("+½", p => p.Symmetry.NudgeFacing(1)));
+        nudge.Children.Add(PluginAction("+1 cell", p => p.Symmetry.NudgeFacing(2)));
+        var savePreset = new WrapPanel();
+        savePreset.Children.Add(_presetName);
+        savePreset.Children.Add(PluginAction("Save current planes", p =>
+        {
+            var message = p.SavePlanePreset(_presetName.Text ?? "");
+            RebuildPresets(p);
+            return message;
+        }));
+        var views = new WrapPanel();
+        for (var side = 0; side < HomeController.ViewNames.Length; side++)
+        {
+            var captured = side;
+            views.Children.Add(LaterAction(HomeController.ViewNames[side], (p, report) => p.Home.View(captured, report)));
+        }
+        views.Children.Add(LaterAction("Back from view", (p, report) => p.Home.ReturnFromView(report)));
+        var thrust = new WrapPanel();
+        thrust.Children.Add(PluginAction("Thrust balance", p => p.Thrust.Report()));
         var close = new Button { Content = "Close", HorizontalAlignment = HorizontalAlignment.Left };
         close.Click += (_, _) => Dispose();
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.6.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure • Asymmetry", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v0.7.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure • Asymmetry • Nudge/Presets • Views • Thrust", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -66,6 +92,7 @@ internal sealed class ToolsScreen : ScreenView
         });
         panel.Children.Add(_hotkeys);
         panel.Children.Add(_status);
+        panel.Children.Add(_info);
         panel.Children.Add(cog);
         panel.Children.Add(new TextBlock
         {
@@ -86,6 +113,22 @@ internal sealed class ToolsScreen : ScreenView
             TextWrapping = TextWrapping.Wrap
         });
         panel.Children.Add(home);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Nudge: moves the symmetry plane of the axis you are looking along (+ is away from you). Hotkeys Ctrl+Alt+= / Ctrl+Alt+- (½ cell), add Shift for a whole cell.",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(nudge);
+        panel.Children.Add(new TextBlock { Text = "Plane presets (saved in settings.json, applied to the target grid):", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(savePreset);
+        panel.Children.Add(_presets);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Axis views: moves you to look at the target grid's center from one side, square to its axes (admin teleport). Back returns you to where you started.",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(views);
+        panel.Children.Add(thrust);
         panel.Children.Add(_feedback);
         panel.Children.Add(close);
         var border = new Border
@@ -127,6 +170,33 @@ internal sealed class ToolsScreen : ScreenView
             Refresh();
         };
         return button;
+    }
+
+    private void RebuildPresets(Plugin plugin)
+    {
+        _presets.Children.Clear();
+        foreach (var name in plugin.PlanePresets.Keys.OrderBy(n => n, StringComparer.OrdinalIgnoreCase))
+        {
+            var planes = plugin.PlanePresets[name];
+            var row = new WrapPanel();
+            row.Children.Add(new TextBlock
+            {
+                Text = name + "  (" + string.Join(" · ", Enumerable.Range(0, 3).Select(a => planes.Length > a && planes[a] is { } d
+                    ? GridMath.DescribePlane("XYZ"[a], d) : "XYZ"[a] + ": off")) + ")",
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 12, 0)
+            });
+            var captured = name;
+            row.Children.Add(PluginAction("Apply", p => p.ApplyPlanePreset(captured)));
+            row.Children.Add(PluginAction("Delete", p =>
+            {
+                var message = p.DeletePlanePreset(captured);
+                RebuildPresets(p);
+                return message;
+            }));
+            _presets.Children.Add(row);
+        }
+        if (_presets.Children.Count == 0) _presets.Children.Add(new TextBlock { Text = "No presets yet.", Opacity = 0.7 });
     }
 
     private Button PluginAction(string label, Func<Plugin, string> action)
@@ -188,6 +258,7 @@ internal sealed class ToolsScreen : ScreenView
             if (model.Plugin.SettingsError is { } error) lines += "\n" + error;
             else if (model.Plugin.SettingsFile is { } file) lines += "\nCustomize in " + file;
             _hotkeys.Text = lines;
+            RebuildPresets(model.Plugin);
         }
         Refresh();
         _timer.Start();
@@ -204,6 +275,7 @@ internal sealed class ToolsScreen : ScreenView
         if (DataContext is not ToolsScreenModel model) return;
         try
         {
+            _info.Text = model.Plugin.Symmetry.Info();
             _status.Text = model.Plugin.Symmetry.Status +
                 (model.Plugin.Asymmetry.Summary is { } asym ? Environment.NewLine + "Asymmetry finder (live): " + asym : "");
         }

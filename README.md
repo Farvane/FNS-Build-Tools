@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.6.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.7.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -25,7 +25,8 @@ clear width where you stand, and a live centerline offset readout.
 
 v0.6 adds a live **asymmetry finder**.
 
-Planned next: grid info panel, plane nudge, axis camera views. See [docs/DESIGN.md](docs/DESIGN.md).
+v0.7 adds a **grid info panel**, **plane nudge and presets**, **axis views**
+and **thrust balance**. That completes the original design backlog. See [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Install
 
@@ -41,6 +42,29 @@ Planned next: grid info panel, plane nudge, axis camera views. See [docs/DESIGN.
    target grid's size per axis and its current planes.
 3. Click **All axes → CoG**, or a single axis. Turn on symmetry mode in the block
    placer to see the planes.
+
+## Grid info, nudge, presets, views and thrust (screen)
+
+Open the Build Tools screen (`Ctrl+Alt+I`) while looking at a grid:
+
+- **Grid info:** size in meters, block count, attached grids, and mass. It
+  also shows the center-of-mass offset from the CoG on each axis, which is
+  handy for spotting a heavy side.
+- **Nudge:** moves the symmetry plane of the grid axis you are looking along by
+  ½ cell (0.125 m) or a whole cell. + is away from you. Hotkeys work without
+  the screen.
+- **Plane presets:** type a name and **Save current planes**. **Apply** puts
+  that set back on the target grid, and an axis that was off is cleared.
+  Presets live in `settings.json` and work across grids and worlds.
+- **Axis views:** Front, Back, Left, Right, Top or Bottom moves you to look at
+  the grid's center from that side, square to its axes, far enough away to
+  frame it. This is for reference shots in the Design Range. **Back from
+  view** returns you to where you were before the first view. It uses the
+  admin teleport, like Home Grid, and works best in zero gravity.
+- **Thrust balance:** for each thrust direction it lists rated thrust and how
+  far the center of thrust sits off the center of mass, plus the torque that
+  causes. Under 5 cm reads "balanced". It covers this grid only (not
+  subgrids), and direction names are the game's own thrust directions.
 
 ## Asymmetry finder
 
@@ -134,6 +158,8 @@ the screen confirms each action.
 | `Ctrl+Alt+/` | Clear width where you stand |
 | `Ctrl+Alt+Shift+/` | Toggle the centerline offset readout |
 | `Ctrl+Alt+\` | Toggle the live asymmetry finder |
+| `Ctrl+Alt+=` / `Ctrl+Alt+-` | Nudge the plane you are facing ½ cell away / toward you |
+| `Ctrl+Alt+Shift+=` / `Ctrl+Alt+Shift+-` | Nudge a whole cell |
 
 Vanilla reacts to its own keys even while Ctrl+Alt is held. For example, `G` opens the block picker. The defaults therefore use keys that vanilla gameplay leaves unbound (`I`, `N` and `O`). Pick unbound keys when customizing. Modifiers must match exactly. To change a hotkey, close SE2 and edit
 `settings.json` in the plugin's Pulsar configuration folder (the screen shows
@@ -182,6 +208,11 @@ through a cell center. Both are exact. SE2 grid cells are 0.25 m.
 - [ ] Asymmetry: a symmetric ship reports "every block has its mirror".
 - [ ] Remove one block: its mirror turns red with a ghost where it was; re-adding it clears both.
 - [ ] Swap a block type / repaint one side: orange / yellow outlines appear and clear when fixed.
+- [ ] Grid info: size/blocks match; mass and CoM offset appear on a ship, "static grid" on a station.
+- [ ] Nudge: facing each axis moves that plane ½ / 1 cell the expected way; facing an axis with no plane refuses.
+- [ ] Presets: save, apply to another grid, delete; survives a game restart.
+- [ ] Views: each of the six views frames the ship from the right side; Back from view returns you.
+- [ ] Thrust balance: a symmetric thruster layout reads balanced; adding one off-center thruster shows an offset.
 - [ ] Not tested yet: a dedicated server or a multiplayer client.
 
 ## Development

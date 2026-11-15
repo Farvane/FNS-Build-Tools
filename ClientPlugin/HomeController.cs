@@ -110,6 +110,59 @@ internal sealed class HomeController
         timer.Start();
     }
 
+    public static readonly string[] ViewNames = { "Front", "Back", "Left", "Right", "Top", "Bottom" };
+
+    private static readonly Base6Directions.Direction[] ViewSides =
+    {
+        Base6Directions.Direction.Forward, Base6Directions.Direction.Backward, Base6Directions.Direction.Left,
+        Base6Directions.Direction.Right, Base6Directions.Direction.Up, Base6Directions.Direction.Down,
+    };
+
+    private Saved? _viewReturn;
+
+    /// <summary>
+    /// Moves the player to look at the target grid's CoG from one side, square to its axes and far
+    /// enough to frame it. The first view remembers where you were for <see cref="ReturnFromView"/>.
+    /// </summary>
+    public void View(int side, Action<string> report)
+    {
+        if (_busy) throw new InvalidOperationException("A move is already in progress");
+        var target = _context.RequireTarget(out var grid);
+        var character = _context.LocalCharacter() ?? throw new InvalidOperationException("Your character is unavailable");
+        var spans = SymmetryController.Bounds(grid);
+        var pivot = new Vector3((float)(spans.X.PlaneDistance * 0.125), (float)(spans.Y.PlaneDistance * 0.125), (float)(spans.Z.PlaneDistance * 0.125));
+        var radius = 0.5 * Math.Sqrt(spans.X.Meters * spans.X.Meters + spans.Y.Meters * spans.Y.Meters + spans.Z.Meters * spans.Z.Meters);
+        var distance = (float)ViewFraming.Distance(radius);
+        var outward = Base6Directions.GetVector(ViewSides[side]);
+        // Top and bottom keep the ship's nose at the top of the view.
+        var up = side < 4 ? Base6Directions.GetVector(Base6Directions.Direction.Up) : Base6Directions.GetVector(Base6Directions.Direction.Forward);
+        var local = new WorldTransform(new Vector3D(pivot + outward * distance), Quaternion.CreateFromForwardUp(-outward, up));
+        var gridWorld = EntityTransformFunctions.GetWorldTransform(target.RootEntity.Data);
+        var pose = gridWorld * local; // parent * child
+        var world = new WorldTransform(pose.Position, Quaternion.Normalize(pose.Orientation));
+        var current = EntityTransformFunctions.GetWorldTransform(character.Data);
+        var server = grid.TryGetSession<IGameServer>();
+        _viewReturn ??= new Saved(new WeakReference<Entity>(character), current);
+        Send(new[] { (character, world) }, report, () =>
+        {
+            server?.StopEntityMovement(character);
+            return string.Format(CultureInfo.InvariantCulture, "{0} view, {1:0} m from the grid's center. \"Back from view\" returns you",
+                ViewNames[side], distance);
+        });
+    }
+
+    public void ReturnFromView(Action<string> report)
+    {
+        if (_busy) throw new InvalidOperationException("A move is already in progress");
+        if (_viewReturn is not { } saved || !saved.Entity.TryGetTarget(out var character))
+            throw new InvalidOperationException("No view to return from");
+        Send(new[] { (character, saved.Transform) }, report, () =>
+        {
+            _viewReturn = null;
+            return "Back where you were before the views";
+        });
+    }
+
     public void Return(Action<string> report)
     {
         if (_busy) throw new InvalidOperationException("A move is already in progress");
