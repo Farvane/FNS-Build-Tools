@@ -74,6 +74,7 @@ public static class HotkeyActions
     public const string OpenBuildTools = "OpenBuildTools";
     public const string HomeGrid = "HomeGrid";
     public const string ReturnGrid = "ReturnGrid";
+    public const string OpenRadial = "OpenRadial";
     public const string SymmetryToCoR = "SymmetryToCoR";
     public const string MeasureMark = "MeasureMark";
     public const string MeasureClear = "MeasureClear";
@@ -96,6 +97,8 @@ public static class HotkeyActions
         [OpenBuildTools] = "Ctrl+Alt+I",
         [HomeGrid] = "Ctrl+Alt+O",
         [ReturnGrid] = "Ctrl+Alt+Shift+O",
+        // Radial menu: F3 is not in the vanilla-bound snapshot (Tests/HotkeyTests.cs). Hold-to-open is not built yet.
+        [OpenRadial] = "Ctrl+Alt+F3",
         [SymmetryToCoR] = "Ctrl+Shift+N",
         // Measuring: the unbound punctuation cluster next to N (; ' /).
         [MeasureMark] = "Ctrl+Alt+OemSemicolon",

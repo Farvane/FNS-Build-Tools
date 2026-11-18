@@ -16,7 +16,7 @@ namespace Farvane.BuildTools;
 public sealed class Plugin : IPlugin, IDisposable
 {
     public const string Name = "FNSBuildTools";
-    internal const string Version = "0.8.0";
+    internal const string Version = "0.9.0";
     private const string Label = "[FNS Build Tools] ";
     private static readonly int[] All = { 0, 1, 2 };
 
@@ -92,6 +92,7 @@ public sealed class Plugin : IPlugin, IDisposable
                     [HotkeyActions.OpenBuildTools] = OpenConfigDialog,
                     [HotkeyActions.HomeGrid] = () => ToastLater(report => Home.Home(useCenterOfMass: false, report)),
                     [HotkeyActions.ReturnGrid] = () => ToastLater(Home.Return),
+                    [HotkeyActions.OpenRadial] = OpenRadialScreen,
                 });
             // Start only once a world is running; see HotkeyController._timer for why.
             var hotkeys = Hotkeys;
@@ -189,6 +190,15 @@ public sealed class Plugin : IPlugin, IDisposable
         Diag.Info("Renamed " + plans.Count + " selected block(s).");
         return "Renamed " + plans.Count + " block(s).";
     }
+
+    /// <summary>Runs an action that returns its result text, showing that text as a toast.</summary>
+    internal void RunSync(Func<Plugin, string> action) => Toast(() => action(this));
+
+    /// <summary>Runs an action whose result arrives later, showing it as a toast when it does.</summary>
+    internal void RunLater(Action<Plugin, Action<string>> start) => ToastLater(report => start(this, report));
+
+    /// <summary>Opens the radial menu (the Radial hotkey, while a block is equipped).</summary>
+    public void OpenRadialScreen() => ShowScreen<RadialScreen>(new RadialScreenModel(this), showCursor: true, ScreenLayer.Normal);
 
     /// <summary>Opens the naming window (Ctrl+Alt+Shift+I in-world, or from the Tools screen).</summary>
     public void OpenNamingScreen() => ShowScreen<NamingScreen>(new NamingScreenModel(this), showCursor: true, ScreenLayer.Normal);

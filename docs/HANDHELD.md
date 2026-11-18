@@ -142,6 +142,19 @@ model routing).
 Stop at the first failed step and record the result here. Option A still
 ships without it.
 
+### S1 result (2026-11-18): blocked
+
+- The SDK has the types (`IntegrityHandToolComponent`, `IntegrityHandToolDefinition`,
+  signal types such as `RequestActivatePrimaryActionSignal`), but they are
+  game-defined. No `IntegrityHandTool` string appears in any `.def` file.
+- `sdk_examples` lists five example mods (Armor, CharacterModel, Ice Voxel,
+  Modded Ion Thruster, Skybox). None is a hand tool.
+- Nothing in the SDK shows a mod-defined hand tool, or plugin code running on
+  a hand tool's primary action. S2 and S3 cannot start from this evidence.
+
+Decision: option A (radial on the block placer) ships first. Option B stays open
+until someone finds a supported route, for example from a Mod Editor template.
+
 ## 6. Naming inside the tool (later, 0.9 candidates)
 
 These use geometry Build Tools already computes:
@@ -178,8 +191,10 @@ These use geometry Build Tools already computes:
       both plugins are in a profile.
 - [ ] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
       Naming did).
-- [ ] Radial prototype: opens and closes; every item fires its action; Escape
-      cancels; nothing leaks into vanilla input.
+- [ ] Radial menu (v0.9.0): opens with Ctrl+Alt+F3 while building; each sector
+      and item fires its action; Close and Back work; nothing leaks into vanilla.
+- [ ] Radial menu: the Studio lighting item appears only when FNS Studio Lighting
+      is installed, and toggles it on and off.
 - [ ] Spike S1–S3 recorded here with the SE2 build number.
 
 ## Verification of this write-up
