@@ -16,6 +16,7 @@
     <Compile Include="../ClientPlugin/Analysis.cs" Link="Analysis.cs" />
     <Compile Include="../ClientPlugin/NamingEngine.cs" Link="NamingEngine.cs" />
     <Compile Include="../ClientPlugin/Templates.cs" Link="Templates.cs" />
+    <Compile Include="../ClientPlugin/RadialGeometry.cs" Link="RadialGeometry.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />

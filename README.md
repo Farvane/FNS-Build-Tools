@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.8.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.9.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -82,6 +82,20 @@ First-person selection closes the Build Tools screen first, so the aim and F
 are free. Applying names or unloading the plugin stops selection and clears the
 highlights. Naming is independent of the symmetry hooks, so it still works when
 symmetry is unsupported in a build.
+
+## Radial menu (v0.9.0)
+
+Press `Ctrl+Alt+F3` with a block equipped to open the radial menu. Seven sectors
+sit on the outer ring: Symmetry, Measure, Grid, Nudge, Name, Check and View.
+Click a sector and its actions appear on an inner ring. Click **‹ Back** to return
+to the sectors, or **Close**. Each action closes the menu first, then shows its
+result as a toast.
+
+**Studio lighting** appears in the View sector only when FNS Studio Lighting is
+installed and running. It toggles that plugin's studio lighting on or off.
+
+Hold-to-open, Escape to close, and mouse-direction selection are not built yet.
+The menu is click-driven for now. Its layout has not been seen in-game.
 
 ## Asymmetry finder
 
