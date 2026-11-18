@@ -14,6 +14,8 @@
     <Compile Include="../ClientPlugin/Measure.cs" Link="Measure.cs" />
     <Compile Include="../ClientPlugin/Asymmetry.cs" Link="Asymmetry.cs" />
     <Compile Include="../ClientPlugin/Analysis.cs" Link="Analysis.cs" />
+    <Compile Include="../ClientPlugin/NamingEngine.cs" Link="NamingEngine.cs" />
+    <Compile Include="../ClientPlugin/Templates.cs" Link="Templates.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />

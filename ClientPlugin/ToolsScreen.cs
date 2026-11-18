@@ -79,12 +79,15 @@ internal sealed class ToolsScreen : ScreenView
         views.Children.Add(LaterAction("Back from view", (p, report) => p.Home.ReturnFromView(report)));
         var thrust = new WrapPanel();
         thrust.Children.Add(PluginAction("Thrust balance", p => p.Thrust.Report()));
+        var naming = new WrapPanel();
+        naming.Children.Add(ClosingAction("Open naming window", p => p.OpenNamingScreen()));
+        naming.Children.Add(ClosingAction("Start / stop first-person selection", p => p.ToggleNamingSelection()));
         var close = new Button { Content = "Close", HorizontalAlignment = HorizontalAlignment.Left };
         close.Click += (_, _) => Dispose();
 
         var panel = new StackPanel { Margin = new Thickness(30), Spacing = 18 };
         panel.Children.Add(new TextBlock { Text = "[FNS] GRIDWORX - Build Tools", FontSize = 25, TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new TextBlock { Text = "v0.7.0 preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure • Asymmetry • Nudge/Presets • Views • Thrust", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text = "v" + Plugin.Version + " preview • SE2 " + SymmetryController.SupportedBuild + " • Symmetry CoG/CoR • Home Grid • Measure • Asymmetry • Nudge/Presets • Views • Thrust • Naming", TextWrapping = TextWrapping.Wrap });
         panel.Children.Add(new TextBlock
         {
             Text = "With a block equipped, look at a grid, then open this screen. CoG is the center of the grid's block bounding box.",
@@ -129,6 +132,12 @@ internal sealed class ToolsScreen : ScreenView
         });
         panel.Children.Add(views);
         panel.Children.Add(thrust);
+        panel.Children.Add(new TextBlock
+        {
+            Text = "Naming (Smart Naming, merged in): select blocks in first person (equip a block, aim, press F) or in Terminal → Control Panel, then name them from location, system, function and number. Ctrl+Alt+Shift+I also opens the naming window in-world.",
+            TextWrapping = TextWrapping.Wrap
+        });
+        panel.Children.Add(naming);
         panel.Children.Add(_feedback);
         panel.Children.Add(close);
         var border = new Border
@@ -216,6 +225,20 @@ internal sealed class ToolsScreen : ScreenView
                     : "Failed (" + error.GetType().Name + "). Check the SE2 log.";
             }
             Refresh();
+        };
+        return button;
+    }
+
+    /// <summary>Closes this screen first, so the game (aim, F key) is free, then runs the action.</summary>
+    private Button ClosingAction(string label, Action<Plugin> action)
+    {
+        var button = new Button { Content = label, Margin = new Thickness(0, 0, 10, 10) };
+        button.Click += (_, _) =>
+        {
+            if (DataContext is not ToolsScreenModel model) return;
+            var plugin = model.Plugin;
+            Dispose();
+            action(plugin);
         };
         return button;
     }
