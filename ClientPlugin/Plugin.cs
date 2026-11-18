@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HarmonyLib;
 using Keen.Game2.Client.UI.Library;
+using Keen.Game2.Simulation.WorldObjects.CubeBlocks;
 using Keen.VRage.Core;
 using Keen.VRage.Core.Plugins;
 using Keen.VRage.Library.Diagnostics;
@@ -14,6 +16,7 @@ namespace Farvane.BuildTools;
 public sealed class Plugin : IPlugin, IDisposable
 {
     public const string Name = "FNSBuildTools";
+    internal const string Version = "0.8.0";
     private const string Label = "[FNS Build Tools] ";
     private static readonly int[] All = { 0, 1, 2 };
 
@@ -30,6 +33,9 @@ public sealed class Plugin : IPlugin, IDisposable
     internal HotkeyController? Hotkeys { get; }
     internal string? SettingsFile { get; }
     internal string? SettingsError { get; }
+    private readonly SelectionBridge? _selection;
+    private readonly WorldSelection? _worldSelection;
+    private readonly string? _namingError;
 
     public Plugin()
     {
@@ -37,6 +43,17 @@ public sealed class Plugin : IPlugin, IDisposable
         Measure = new MeasureController(Symmetry);
         Asymmetry = new AsymmetryController(Symmetry);
         Thrust = new ThrustController(Symmetry);
+        try
+        {
+            // Naming was Smart Naming v0.3.0; it now lives here (it does not need the symmetry hooks).
+            _selection = new SelectionBridge();
+            _worldSelection = new WorldSelection(OpenNamingScreen);
+        }
+        catch (Exception error)
+        {
+            _namingError = "Naming unavailable: " + error.Message;
+            Log.Default.WriteLine(Label + _namingError);
+        }
         var settings = new Settings();
         try
         {
@@ -129,6 +146,53 @@ public sealed class Plugin : IPlugin, IDisposable
 
     public void OpenConfigDialog() => ShowScreen<ToolsScreen>(new ToolsScreenModel(this), showCursor: true, ScreenLayer.Normal);
 
+    // ---- Smart Naming (merged from FNS Smart Naming v0.3.0) ----
+
+    internal NamingDraft Draft { get; set; } = new("", "HGR", "DOOR", 1, 2, 0);
+
+    internal string NamingStatus => _namingError ?? (_worldSelection?.Enabled == true
+        ? "First-person selection active — equip a block, aim at a functional block, and press F to toggle it."
+        : "Ready — use first-person selection or the vanilla Control Panel.");
+
+    internal bool WorldSelectionEnabled => _worldSelection?.Enabled == true;
+
+    internal void SetWorldSelection(bool enabled) =>
+        (_worldSelection ?? throw new InvalidOperationException(NamingStatus)).SetEnabled(enabled);
+
+    internal void ClearWorldSelection() => _worldSelection?.Clear();
+
+    /// <summary>Starts or stops first-person selection and shows the result as a toast.</summary>
+    internal void ToggleNamingSelection() => Toast(() =>
+    {
+        SetWorldSelection(!WorldSelectionEnabled);
+        return NamingStatus;
+    });
+
+    internal System.Collections.Generic.IReadOnlyList<(string Name, object Target)> Selected()
+    {
+        var world = _worldSelection?.Snapshot() ?? Array.Empty<(string, object)>();
+        if (world.Count > 0) return world;
+        return (_selection?.Selected() ?? Array.Empty<Keen.Game2.Client.UI.TerminalScreen.ControlPanel.IControlPanelItem>())
+            .Select(item => (item.DisplayName, (object)item)).ToList();
+    }
+
+    internal string ApplyNames(System.Collections.Generic.IReadOnlyList<RenamePlan> plans)
+    {
+        if (_selection is null) throw new InvalidOperationException(NamingStatus);
+        foreach (var plan in plans)
+        {
+            if (plan.Target is FunctionalBlockComponent functional) functional.DisplayName = plan.Proposed;
+            else SelectionBridge.Apply(new[] { plan });
+        }
+        _worldSelection?.SetEnabled(false);
+        _worldSelection?.Clear();
+        Diag.Info("Renamed " + plans.Count + " selected block(s).");
+        return "Renamed " + plans.Count + " block(s).";
+    }
+
+    /// <summary>Opens the naming window (Ctrl+Alt+Shift+I in-world, or from the Tools screen).</summary>
+    public void OpenNamingScreen() => ShowScreen<NamingScreen>(new NamingScreenModel(this), showCursor: true, ScreenLayer.Normal);
+
     /// <summary>Runs an action and shows its result, or the reason it could not run.</summary>
     private void Toast(Func<string> action)
     {
@@ -188,6 +252,8 @@ public sealed class Plugin : IPlugin, IDisposable
     public void Dispose()
     {
         Hotkeys?.Dispose();
+        _worldSelection?.Dispose();
+        _selection?.Dispose();
         Measure.Dispose();
         Asymmetry.Dispose();
         Symmetry.Dispose();

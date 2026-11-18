@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.7.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.8.0 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 
@@ -65,6 +65,23 @@ Open the Build Tools screen (`Ctrl+Alt+I`) while looking at a grid:
   far the center of thrust sits off the center of mass, plus the torque that
   causes. Under 5 cm reads "balanced". It covers this grid only (not
   subgrids), and direction names are the game's own thrust directions.
+
+## Naming (merged from Smart Naming)
+
+v0.8.0 folds **FNS Smart Naming** into this plugin. Smart Naming is deprecated
+and does nothing on its own; remove it from your Pulsar profile.
+
+1. Select blocks: equip any block, aim at a built functional block, and press
+   **F** to add or remove its cyan outline. Or select blocks in Terminal →
+   Control Panel.
+2. Press `Ctrl+Alt+Shift+I` (or **Open naming window** on the Build Tools screen).
+3. Pick a template or type location, system and function, then **Refresh
+   preview** and **Apply names**. Numbering is alphabetical by current name.
+
+First-person selection closes the Build Tools screen first, so the aim and F
+are free. Applying names or unloading the plugin stops selection and clears the
+highlights. Naming is independent of the symmetry hooks, so it still works when
+symmetry is unsupported in a build.
 
 ## Asymmetry finder
 
