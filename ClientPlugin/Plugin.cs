@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using HarmonyLib;
 using Keen.Game2.Client.UI.Library;
+using Keen.Game2.Client.UI.TerminalScreen.ControlPanel;
 using Keen.Game2.Simulation.WorldObjects.CubeBlocks;
 using Keen.VRage.Core;
 using Keen.VRage.Core.Plugins;
+using Keen.VRage.DCS.Components;
 using Keen.VRage.Library.Diagnostics;
 using Keen.VRage.Library.Utils;
 using Keen.VRage.UI.Screens;
@@ -173,22 +175,24 @@ public sealed class Plugin : IPlugin, IDisposable
     {
         var world = _worldSelection?.Snapshot() ?? Array.Empty<(string, object)>();
         if (world.Count > 0) return world;
-        return (_selection?.Selected() ?? Array.Empty<Keen.Game2.Client.UI.TerminalScreen.ControlPanel.IControlPanelItem>())
+        return (_selection?.Selected() ?? Array.Empty<IControlPanelItem>())
             .Select(item => (item.DisplayName, (object)item)).ToList();
     }
 
     internal string ApplyNames(System.Collections.Generic.IReadOnlyList<RenamePlan> plans)
     {
         if (_selection is null) throw new InvalidOperationException(NamingStatus);
-        foreach (var plan in plans)
-        {
-            if (plan.Target is FunctionalBlockComponent functional) functional.DisplayName = plan.Proposed;
-            else SelectionBridge.Apply(new[] { plan });
-        }
+        // First-person selections are renamed on the in-process server (the client may not set the sync property);
+        // Control Panel selections go through the panel's own setter. ServerRename validates every block first.
+        var world = plans.Where(plan => plan.Target is Entity).Select(plan => ((Entity)plan.Target, plan.Proposed)).ToList();
+        var panel = plans.Where(plan => plan.Target is IControlPanelItem).ToList();
+        if (world.Count + panel.Count != plans.Count) throw new InvalidOperationException("A selected block is no longer available.");
+        var status = world.Count > 0 ? ServerRename.Apply(world) : "Renamed " + panel.Count + " block(s).";
+        SelectionBridge.Apply(panel);
         _worldSelection?.SetEnabled(false);
         _worldSelection?.Clear();
-        Diag.Info("Renamed " + plans.Count + " selected block(s).");
-        return "Renamed " + plans.Count + " block(s).";
+        if (panel.Count > 0) Diag.Info("Renamed " + panel.Count + " Control Panel block(s).");
+        return status;
     }
 
     /// <summary>Runs an action that returns its result text, showing that text as a toast.</summary>

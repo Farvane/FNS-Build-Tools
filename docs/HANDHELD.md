@@ -176,9 +176,17 @@ These use geometry Build Tools already computes:
   This is correct today, but the radial should use one shared input poller
   rather than adding a third.
 - **Input conflicts** with vanilla (see section 4).
-- **Multiplayer.** Naming and the radial are client-side. Renaming goes through
-  `FunctionalBlockComponent.DisplayName` (the same path Smart Naming used). MP is
-  untested.
+- **Multiplayer.** Naming and the radial are client-side. The client may not set
+  `FunctionalBlockComponent.DisplayName` (a sync property: "Sync property was
+  disabled by ISignalTableBuilder"), and the vanilla Control Panel route only
+  works while the panel is open (closing it detaches its models and drops their
+  secure `EntityId`s). `ServerRename` pairs each F-selected client replica with
+  its server entity through the in-process `ReplayContext.TranslateLocalToRemote`
+  and posts the write with `InProcessReplicationSessionComponent.PostInvoke`,
+  which runs on the in-process server. Both types are internal to
+  `VRage.Multiplayer` and reached by name, so a game update can disable it (it
+  then fails with a clear message). Single-player and host only; a multiplayer
+  client gets an error. MP is untested.
 - **Merge regressions.** Smart Naming's selection was verified in-game as a
   separate plugin. The merged code compiles, but its in-game test is still pending.
 
@@ -198,8 +206,10 @@ no exceptions in the game log.
       not installed.
 - [x] v0.8.0 naming, single-player: selection mode, F selects and deselects the
       aimed block.
-- [ ] v0.8.0 naming: rename applied, names verified in the terminal and on the
-      block (no rename was logged in the pass).
+- [x] v0.8.0 naming: rename applied (2026-11-19, single-player): 13 F-selected
+      CIC lights renamed CIC-LT-INT-001 to -013 with no Control Panel open; log
+      shows "Server renamed 13 of 13" on the in-process server thread and
+      "Rename check: 13 of 13" on the client.
 - [ ] v0.8.0 naming, Control Panel selection.
 - [ ] v0.8.0: Smart Naming shows the deprecation notice and creates no hooks when
       both plugins are in a profile.

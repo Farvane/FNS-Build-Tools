@@ -76,7 +76,7 @@ internal sealed class WorldSelection : IDisposable
     }
 
     internal IReadOnlyList<(string Name, object Target)> Snapshot() => Volatile.Read(ref _selected)
-        .Select(block => (CurrentName(block.Component, block.Entity), (object)block.Component)).ToList();
+        .Select(block => (CurrentName(block.Component, block.Entity), (object)block.Entity)).ToList();
 
     internal void Clear()
     {

@@ -83,6 +83,11 @@ are free. Applying names or unloading the plugin stops selection and clears the
 highlights. Naming is independent of the symmetry hooks, so it still works when
 symmetry is unsupported in a build.
 
+Renaming first-person selections needs single-player or a hosted game: the names
+are written on the in-process server, the same way the vanilla Control Panel
+renames a block. The SE2 log records `Server renamed N of N block(s)` and a
+`Rename check` line once the new names reach your view.
+
 ## Radial menu (v0.9.0)
 
 Press `Ctrl+Alt+F3` with a block equipped to open the radial menu. Seven sectors
