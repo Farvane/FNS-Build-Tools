@@ -223,7 +223,7 @@ no exceptions in the game log.
 ## Verification of this write-up
 
 - The Build Tools unit tests pass (70, including the ported naming and radial geometry tests).
-- `FNSBuildTools.csproj` and `FNSSmartNaming.csproj` compile against the SE2
-  4.0.0.3169 assemblies in `reference/se2-game/Game2` with 0 warnings.
-- Deployed locally to Pulsar Modern and run in-game on 2026-11-18 (see section 8).
+- `FNSBuildTools.csproj` compiles against the SE2 4.0.0.3169 assemblies in
+  `reference/se2-game/Game2` with 0 warnings.
+- Deployed locally to Pulsar Modern and run in-game on 2026-11-18 and 2026-11-19 (see section 8).
   Nothing has been published.
