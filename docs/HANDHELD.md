@@ -210,9 +210,11 @@ no exceptions in the game log.
       CIC lights renamed CIC-LT-INT-001 to -013 with no Control Panel open; log
       shows "Server renamed 13 of 13" on the in-process server thread and
       "Rename check: 13 of 13" on the client.
-- [ ] v0.8.0 naming, Control Panel selection.
-- [ ] v0.8.0: Smart Naming shows the deprecation notice and creates no hooks when
-      both plugins are in a profile.
+- [x] v0.8.0 naming, Control Panel selection (2026-11-19, single-player): two
+      lights selected in the panel, panel closed, renamed from the naming window;
+      log shows "Server renamed 2 of 2" and "Rename check: 2 of 2". The selection
+      is resolved to server entities on each panel selection change (the panel's
+      ids die when it closes) and renamed through the same server path.
 - [ ] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
       Naming did).
 - [ ] Spike S1–S3 recorded here with the SE2 build number (S1 blocked, see

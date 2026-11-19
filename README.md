@@ -73,7 +73,8 @@ and does nothing on its own; remove it from your Pulsar profile.
 
 1. Select blocks: equip any block, aim at a built functional block, and press
    **F** to add or remove its cyan outline. Or select blocks in Terminal →
-   Control Panel.
+   Control Panel and close it; the naming window uses that selection when
+   nothing is selected with F.
 2. Press `Ctrl+Alt+Shift+I` (or **Open naming window** on the Build Tools screen).
 3. Pick a template or type location, system and function, then **Refresh
    preview** and **Apply names**. Numbering is alphabetical by current name.
@@ -83,7 +84,7 @@ are free. Applying names or unloading the plugin stops selection and clears the
 highlights. Naming is independent of the symmetry hooks, so it still works when
 symmetry is unsupported in a build.
 
-Renaming first-person selections needs single-player or a hosted game: the names
+Renaming needs single-player or a hosted game: the names
 are written on the in-process server, the same way the vanilla Control Panel
 renames a block. The SE2 log records `Server renamed N of N block(s)` and a
 `Rename check` line once the new names reach your view.

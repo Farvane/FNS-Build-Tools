@@ -101,7 +101,7 @@ internal sealed class NamingScreen : ScreenView
             _status.Text = (Plugin?.NamingStatus ?? "Unavailable") + " Selected: " + selected.Count + ".";
             _preview.Children.Clear();
             foreach (var plan in _plans.Take(100)) _preview.Children.Add(new TextBlock { Text = plan.Original + "  →  " + plan.Proposed });
-            if (_plans.Count == 0) _preview.Children.Add(new TextBlock { Text = "No selected functional blocks found. Select with F in-world, or keep Terminal Control Panel open underneath this window with blocks selected." });
+            if (_plans.Count == 0) _preview.Children.Add(new TextBlock { Text = "No selected functional blocks found. Select with F in-world, or select blocks in Terminal → Control Panel, close it, and refresh." });
             if (_plans.Count > 100) _preview.Children.Add(new TextBlock { Text = "…and " + (_plans.Count - 100) + " more." });
         }
         catch (Exception error) { _plans = Array.Empty<RenamePlan>(); _status.Text = error.Message; }

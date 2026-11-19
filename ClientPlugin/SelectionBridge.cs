@@ -3,48 +3,69 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 using Keen.Game2.Client.UI.TerminalScreen.ControlPanel;
+using Keen.VRage.Core.Game.Components;
+using Keen.VRage.DCS.Components;
 
 namespace Farvane.BuildTools;
 
+/// <summary>
+/// Tracks the blocks selected in the vanilla Control Panel. Each selection change is snapshotted and resolved to
+/// server entities straight away, because the panel's ids stop working once it closes; the naming window (which
+/// cannot be open at the same time) then renames the snapshot through <see cref="ServerRename"/>.
+/// </summary>
 internal sealed class SelectionBridge : IDisposable
 {
     private const string ViewModelName = "Keen.Game2.Client.UI.TerminalScreen.ControlPanel.ControlPanelViewModel";
+    private static readonly Type? ViewModelType = AccessTools.TypeByName(ViewModelName);
+    private static readonly FieldInfo? ControlPanelComponent = ViewModelType is null ? null : AccessTools.Field(ViewModelType, "_controlPanel");
     private readonly Harmony _harmony = new(Plugin.Name + ".Selection");
-    private static WeakReference<object>? _current;
+    private static IReadOnlyList<PanelBlock> _selected = Array.Empty<PanelBlock>();
+    private static int _captureFailed;
 
     internal SelectionBridge()
     {
-        var viewModel = AccessTools.TypeByName(ViewModelName)
-            ?? throw new NotSupportedException("The SE2 control panel is unavailable in this game build.");
-        var changed = AccessTools.Method(viewModel, "HandleControlPanelSelectionChanged")
+        if (ViewModelType is null) throw new NotSupportedException("The SE2 control panel is unavailable in this game build.");
+        if (ControlPanelComponent is null) throw new NotSupportedException("The SE2 control-panel session link changed in this game build.");
+        var changed = AccessTools.Method(ViewModelType, "HandleControlPanelSelectionChanged")
             ?? throw new NotSupportedException("The SE2 control-panel selection hook changed in this game build.");
         var capture = AccessTools.Method(typeof(SelectionBridge), nameof(Capture));
         _harmony.Patch(changed, postfix: new HarmonyMethod(capture));
     }
 
-    private static void Capture(object __instance) => _current = new WeakReference<object>(__instance);
-
-    internal IReadOnlyList<IControlPanelItem> Selected()
+    /// <summary>Postfix on ControlPanelViewModel.HandleControlPanelSelectionChanged: snapshot and resolve the selection.</summary>
+    private static void Capture(object __instance)
     {
-        if (_current is null || !_current.TryGetTarget(out var root)) return Array.Empty<IControlPanelItem>();
-        return Discover(root, 3)
-            .Where(item => item.IsSelected && !string.IsNullOrWhiteSpace(item.DisplayName))
-            .Distinct(ReferenceComparer<IControlPanelItem>.Instance)
-            .ToList();
-    }
-
-    internal static void Apply(IEnumerable<RenamePlan> plans)
-    {
-        foreach (var plan in plans)
+        try
         {
-            if (plan.Target is not IControlPanelItem item)
-                throw new InvalidOperationException("A selected control-panel item is no longer available.");
-            item.DisplayName = plan.Proposed;
-            item.ValidateDisplayName();
+            var blocks = Discover(__instance, 4)
+                .OfType<ControlPanelEntityViewModel>()
+                .Where(item => item.IsSelected && !item.IsGroup && !string.IsNullOrWhiteSpace(item.DisplayName))
+                .Distinct(ReferenceComparer<ControlPanelEntityViewModel>.Instance)
+                .ToList();
+            if (blocks.Count == 0)
+            {
+                Volatile.Write(ref _selected, Array.Empty<PanelBlock>());
+                return;
+            }
+            var session = (ControlPanelComponent!.GetValue(__instance) as Component)?.GetSession();
+            if (session is null) return;
+            var selected = blocks.Select(item => new PanelBlock(item.DisplayName, item.Model.EntityId, session)).ToList();
+            ServerRename.Resolve(session, selected);
+            Volatile.Write(ref _selected, selected);
+        }
+        catch (Exception error)
+        {
+            if (Interlocked.Exchange(ref _captureFailed, 1) == 0) Diag.Failed("Control Panel selection", error);
         }
     }
+
+    /// <summary>The blocks last selected in the Control Panel (kept after it closes, until renamed or cleared).</summary>
+    internal IReadOnlyList<PanelBlock> Selected() => Volatile.Read(ref _selected);
+
+    internal void Clear() => Volatile.Write(ref _selected, Array.Empty<PanelBlock>());
 
     private static IEnumerable<IControlPanelItem> Discover(object root, int depth)
     {
@@ -81,7 +102,11 @@ internal sealed class SelectionBridge : IDisposable
         }
     }
 
-    public void Dispose() => _harmony.UnpatchAll(Plugin.Name + ".Selection");
+    public void Dispose()
+    {
+        _harmony.UnpatchAll(Plugin.Name + ".Selection");
+        Clear();
+    }
 
     private sealed class ReferenceComparer<T> : IEqualityComparer<T> where T : class
     {
