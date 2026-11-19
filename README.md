@@ -1,6 +1,6 @@
 # \[FNS\] GRIDWORX - Build Tools
 
-**v0.9.0 preview.** Symmetry to CoG and Home Grid are verified in-game
+**v0.9.1 preview.** Symmetry to CoG and Home Grid are verified in-game
 (single-player). An optional Pulsar Modern client
 plugin for Space Engineers 2 with precision construction helpers.
 

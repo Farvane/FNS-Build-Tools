@@ -16,7 +16,7 @@ namespace Farvane.BuildTools;
 public sealed class Plugin : IPlugin, IDisposable
 {
     public const string Name = "FNSBuildTools";
-    internal const string Version = "0.9.0";
+    internal const string Version = "0.9.1";
     private const string Label = "[FNS Build Tools] ";
     private static readonly int[] All = { 0, 1, 2 };
 
