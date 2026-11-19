@@ -182,25 +182,36 @@ These use geometry Build Tools already computes:
 - **Merge regressions.** Smart Naming's selection was verified in-game as a
   separate plugin. The merged code compiles, but its in-game test is still pending.
 
-## 8. Validation checklist (none done yet)
+## 8. Validation checklist
 
-- [ ] v0.8.0 naming, single-player: select with F, rename, verify names in the
-      terminal and on the block.
+In-game pass on 2026-11-18, SE2 4.0.0.3169, Pulsar Modern 2.4.3, single-player,
+no exceptions in the game log.
+
+- [x] Radial menu (v0.9.0): opens with Ctrl+Alt+F3 while building; each sector
+      and item fires its action; wedges highlight under the pointer; the hub goes
+      back a ring and closes from the top ring; nothing leaks into vanilla.
+- [x] Radial menu: the Studio lighting item toggles FNS Studio Lighting's setting
+      off and on (logged as "Disabled in settings", then re-armed).
+- [ ] Radial menu: Studio lighting toggle seen lighting change in the Design Range
+      (the test world had no Design Range skybox, so lighting stayed inactive).
+- [ ] Radial menu: the Studio lighting item is hidden when FNS Studio Lighting is
+      not installed.
+- [x] v0.8.0 naming, single-player: selection mode, F selects and deselects the
+      aimed block.
+- [ ] v0.8.0 naming: rename applied, names verified in the terminal and on the
+      block (no rename was logged in the pass).
 - [ ] v0.8.0 naming, Control Panel selection.
 - [ ] v0.8.0: Smart Naming shows the deprecation notice and creates no hooks when
       both plugins are in a profile.
 - [ ] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
       Naming did).
-- [ ] Radial menu (v0.9.0): opens with Ctrl+Alt+F3 while building; each sector
-      and item fires its action; wedges highlight under the pointer; the hub goes
-      back a ring and closes from the top ring; nothing leaks into vanilla.
-- [ ] Radial menu: the Studio lighting item appears only when FNS Studio Lighting
-      is installed, and toggles it on and off.
-- [ ] Spike S1–S3 recorded here with the SE2 build number.
+- [ ] Spike S1–S3 recorded here with the SE2 build number (S1 blocked, see
+      section 5).
 
 ## Verification of this write-up
 
 - The Build Tools unit tests pass (70, including the ported naming and radial geometry tests).
 - `FNSBuildTools.csproj` and `FNSSmartNaming.csproj` compile against the SE2
   4.0.0.3169 assemblies in `reference/se2-game/Game2` with 0 warnings.
-- No game session was run. Nothing has been deployed, installed or published.
+- Deployed locally to Pulsar Modern and run in-game on 2026-11-18 (see section 8).
+  Nothing has been published.

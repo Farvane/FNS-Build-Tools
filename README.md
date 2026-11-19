@@ -94,8 +94,8 @@ result as a toast.
 **Studio lighting** appears in the View sector only when FNS Studio Lighting is
 installed and running. It toggles that plugin's studio lighting on or off.
 
-Hold-to-open and Escape to close are not built yet. The menu has not been run
-in-game.
+Verified in-game (single-player). Hold-to-open and Escape to close are not
+built yet.
 
 ## Asymmetry finder
 
