@@ -215,8 +215,8 @@ no exceptions in the game log.
       log shows "Server renamed 2 of 2" and "Rename check: 2 of 2". The selection
       is resolved to server entities on each panel selection change (the panel's
       ids die when it closes) and renamed through the same server path.
-- [ ] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
-      Naming did).
+- [x] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
+      Naming did). Verified 2026-11-19.
 - [ ] Spike S1–S3 recorded here with the SE2 build number (S1 blocked, see
       section 5).
 
