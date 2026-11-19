@@ -192,14 +192,15 @@ These use geometry Build Tools already computes:
 - [ ] v0.8.0: Ctrl+Alt+Shift+I opens naming without a block equipped (as Smart
       Naming did).
 - [ ] Radial menu (v0.9.0): opens with Ctrl+Alt+F3 while building; each sector
-      and item fires its action; Close and Back work; nothing leaks into vanilla.
+      and item fires its action; wedges highlight under the pointer; the hub goes
+      back a ring and closes from the top ring; nothing leaks into vanilla.
 - [ ] Radial menu: the Studio lighting item appears only when FNS Studio Lighting
       is installed, and toggles it on and off.
 - [ ] Spike S1–S3 recorded here with the SE2 build number.
 
 ## Verification of this write-up
 
-- The Build Tools unit tests pass (60, including the ported naming tests).
+- The Build Tools unit tests pass (70, including the ported naming and radial geometry tests).
 - `FNSBuildTools.csproj` and `FNSSmartNaming.csproj` compile against the SE2
   4.0.0.3169 assemblies in `reference/se2-game/Game2` with 0 warnings.
 - No game session was run. Nothing has been deployed, installed or published.

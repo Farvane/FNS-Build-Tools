@@ -87,15 +87,15 @@ symmetry is unsupported in a build.
 
 Press `Ctrl+Alt+F3` with a block equipped to open the radial menu. Seven sectors
 sit on the outer ring: Symmetry, Measure, Grid, Nudge, Name, Check and View.
-Click a sector and its actions appear on an inner ring. Click **‹ Back** to return
-to the sectors, or **Close**. Each action closes the menu first, then shows its
+Point at a wedge to highlight it and click to pick it; its actions appear on an
+inner ring. Click the hub to go back a ring, or to close the menu from the top ring. Each action closes the menu first, then shows its
 result as a toast.
 
 **Studio lighting** appears in the View sector only when FNS Studio Lighting is
 installed and running. It toggles that plugin's studio lighting on or off.
 
-Hold-to-open, Escape to close, and mouse-direction selection are not built yet.
-The menu is click-driven for now. Its layout has not been seen in-game.
+Hold-to-open and Escape to close are not built yet. The menu has not been run
+in-game.
 
 ## Asymmetry finder
 
